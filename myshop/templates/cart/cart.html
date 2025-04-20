@@ -1,0 +1,116 @@
+{% extends 'base/__base.html' %}
+
+{% block title %}
+	Shopping Cart
+{% endblock title %}
+
+{% load static %}
+{% load humanize %}
+{% load custom_filter %}
+
+{% block content %}
+
+<style>
+	.cart_product {
+		display: block;
+		margin: 15px 15px 10px 25px;
+	  }	  
+
+	#total {
+		background: lightgray;
+		font-size: 24px;
+		
+	}
+
+	#message_total {
+		text-align: right;
+	}
+	
+	#sum_all_total {
+		color: orange;
+		text-align: right;
+	}
+	a.btn {
+		margin-top: unset;
+	}
+
+</style>
+
+	<section id="cart_items">
+		<div class="container">
+			<div class="breadcrumbs">
+				<ol class="breadcrumb">
+				<li><a href="{% url 'index' %}">Trang chủ</a></li>
+				<li class="active">Giỏ hàng</li>
+				</ol>
+			</div>
+			<div class="table-responsive cart_info">
+				<table class="table table-condensed">
+					<thead>
+						<tr class="cart_menu">
+							<td class="image" style="text-align: center;">Sản phẩm</td>
+							<td class="description"></td>
+							<td class="price">Giá</td>
+							<td class="quantity">Số lượng</td>
+							<td class="total" style="text-align: center;">Tổng</td>
+							<td></td>
+						</tr>
+					</thead>
+					<tbody>
+						{% if message %}
+							<td colspan="6">{{message}}</td>
+						{% else %}
+							{% for orderdetail in data_orderdetail %}
+								<tr>
+									<td class="cart_product">
+										<a href="{% url 'view_product' product_id=orderdetail.product.id %}">
+											{% if orderdetail.product.image|first in 'image' %}
+												<img src="{% static orderdetail.product.image %}" alt="" style="width: 100px"/>
+											{% else %}
+												<img src="{{orderdetail.product.image}}" alt="" style="width: 100px"/>
+											{% endif %}
+										</a>
+									</td>
+									<td class="cart_description">
+										<h4><a href="">{{orderdetail.product.name}}</a></h4>
+										<p>Mã sản phẩm: 1089772{{orderdetail.product.id}}</p>
+									</td>
+									<td class="cart_price">
+										<p>{{orderdetail.product.id|get_price|intcomma}} VND</p>
+									</td>
+									<td class="cart_quantity">
+										<div class="cart_quantity_button">
+											<a class="cart_quantity_up" href="{% url 'change_product_quantity' action='increase' product_id=orderdetail.product.id %}"> + </a>
+											<input class="cart_quantity_input" type="text" name="quantity" value="{{orderdetail.quantity}}" autocomplete="off" size="2">
+											<a class="cart_quantity_down" href="{% url 'change_product_quantity' action='decrease' product_id=orderdetail.product.id %}"> - </a>
+										</div>
+									</td>
+
+									<td class="cart_total">
+										<p class="cart_total_price" style="text-align: right;">{{orderdetail.amount|intcomma}} VND</p>
+									</td>
+									<td class="cart_delete">
+										<a class="cart_quantity_delete" href="{% url 'delete_product_in_cart' product_id=orderdetail.product.id %}"><i class="fa fa-times"></i></a>
+									</td>
+								</tr>
+								{% endfor %}
+								<tr id="total">
+									<td id="message_total" colspan="4">Tổng tiền</td>
+									<td id="sum_all_total">{{total_amount|intcomma}} VND</td>
+									<td></td>
+								</tr>
+							{% endif %}
+						<tr>
+							<td colspan="4"></td>
+							<td colspan="2">
+								<a href="{% if user|count_product_in_card > 0 %} {% url 'checkout' %} {% endif %}" class="btn btn-default btn-block btn-large get">Thanh toán</a>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+
+{% endblock content %}
+

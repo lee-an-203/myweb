@@ -1,0 +1,47 @@
+{% load humanize %}
+<div class="table-responsive cart_info">
+    <table class="table table-condensed">
+        <thead>
+            <tr class="cart_menu">
+                <td class="image">Sản phẩm</td>
+                <td class="description"></td>
+                <td class="price">Giá</td>
+                <td class="quantity">Số lượng</td>
+                <td class="total">Tổng</td>
+                <td></td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for orderdetail in data_orderdetail %}
+                <tr>
+                    <td class="cart_product">
+                        <a href="{% url 'view_product' product_id=orderdetail.product.id %}"><img src="{{orderdetail.product.image}}" alt="" width="100px"></a>
+                    </td>
+                    <td class="cart_description">
+                        <h4><a href="">{{orderdetail.product.name}}</a></h4>
+                        <p>Web ID: 1089772{{orderdetail.product.id}}</p>
+                    </td>
+                    <td class="cart_price">
+                        <p>{{orderdetail.product.price|intcomma}} VND</p>
+                    </td>
+                    <td class="cart_quantity">
+                        <div class="cart_quantity_button">
+                            <span>
+                                {{orderdetail.quantity}}
+                            </span>
+                        </div>
+                    </td>
+
+                    <td class="cart_total">
+                        <p class="cart_total_price">{{orderdetail.amount|intcomma}} VND</p>
+                    </td>
+
+                </tr>
+                {% endfor %}
+            <tr id="total">
+                <td class="message_total" colspan="4">Tổng tiền</td>
+                <td class="sum_all_total" colspan="2">{{total_amount|intcomma}} VND</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

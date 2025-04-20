@@ -1,0 +1,67 @@
+{% extends 'base/__base.html' %}
+{% block title %}
+	Home |
+{% endblock title %}
+{% block content %}
+	{% load static %}
+	{% load humanize %}
+	{% load custom_filter %}
+
+
+	<script>
+		$(document).ready(function(){
+		  $("#mouse").mouseenter(function(){
+			$(this).css("color", "red");
+			$(this).css("background-color", "lightgrey");
+		  });
+		  $("#mouse").mouseleave(function(){
+			$(this).css("color", "black");
+			$(this).css("background-color", "white");
+		  });
+		});
+		
+	</script>
+
+	<section>
+		<div class="container">
+			<div class="row">
+				<div class="col-sm-3">
+					<div class="left-sidebar">
+						{% include 'common/categories.html' %} <!--load category-->
+						<div class="shipping text-center"><!--shipping-->
+							<img src="{% static 'images/home/w7wo0q2b.png' %}" alt="" />
+							<img src="{% static 'images/home/shipping.jpg' %}" alt="" />
+						</div><!--/shipping-->
+					
+					</div>
+				</div>
+				
+				<div class="col-sm-9 padding-right">
+					<div class="features_items"><!--features_items-->
+						<h2 class="title text-center"></h2>
+						<div>
+							{% for product in products %}
+								{% include 'product/product-item.html' %}
+							{% endfor %}
+						</div>
+
+					</div><!--features_items-->
+					
+				</div>
+
+				<div id="alert-add-product">
+					<h1  style="font-size: 300%; margin: auto; text-align: center" >
+						<span class="glyphicon glyphicon-ok-sign"></span>
+					</h1>
+					<h1 id="content" style="text-align: center;">
+						Bạn đã thêm sản phẩm thành công vào giỏ hàng	
+					</h1>
+				</div>
+			</div>
+		</div>
+	</section>
+
+
+
+{% endblock content %}
+	

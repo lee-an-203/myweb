@@ -1,0 +1,76 @@
+<style>
+    /* style.css */
+
+.account-container {
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 30px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.account-header {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 25px;
+  color: #333;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+.account-info {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  row-gap: 15px;
+  column-gap: 20px;
+}
+
+.account-info label {
+  font-weight: 600;
+  color: #555;
+}
+
+.account-info div {
+  color: #222;
+}
+
+.edit-btn {
+  display: inline-block;
+  margin-top: 25px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 8px;
+  text-align: center;
+  transition: background-color 0.3s ease;
+}
+
+.edit-btn:hover {
+  background-color: #0056b3;
+}
+
+</style>
+
+
+{% extends 'base/__base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+<div class="account-container">
+  <div class="account-header">Thông tin tài khoản</div>
+
+  <div class="account-info">
+    <label>Họ và tên:</label><div>{{ user.first_name }} {{ user.last_name }}</div>
+    <label>Email:</label><div>{{ user.email }}</div>
+    <label>Tên đăng nhập:</label><div>{{ user.username }}</div>
+    <label>Ngày tham gia:</label><div>{{ user.date_joined|date:"d/m/Y" }}</div>
+  </div>
+
+</div>
+{% endblock %}

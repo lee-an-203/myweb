@@ -1,0 +1,32 @@
+{% extends 'base/__base.html' %}
+{% block title %}
+    Đăng Nhập Hệ Thống
+{% endblock title %}
+
+{% block content %}
+
+    <div class="container">
+        {% load static %}
+        <div class="row">
+            <div class="col-sm-8">
+                <img class="img-fluid" src="{% static 'images/logo.png' %}" alt="" width="90%" style="padding-bottom: 20px;">
+            </div>
+            <div class="col-sm-4">
+                {% if message %}
+                    <h1 style="color: red">{{message}}</h1>
+                {% endif %}
+                <form action="" method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div class="form-group {% if field.errors %} is-invalid {% else %} is-valid {% endif %}">
+                            {{ field.label }}
+                            {{ field }}
+                        </div>
+                    {% endfor %}
+                    <input type="submit" class="btn btn-success btn-lg btn-block" value="Đăng Nhập">
+                </form>
+                <p>Bạn chưa có tài khoản <a href="{% url 'register_user' %}">Bấm vào đây để tạo</a></p>
+            </div>
+        </div>
+</div>
+{% endblock content %}

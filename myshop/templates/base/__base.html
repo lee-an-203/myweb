@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	{% load static %}
+	{% load custom_filter %}
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<title>{% block title %}
+
+		{% endblock title %}|MOBILE-STORE</title>
+	<link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+	<link href="{% static 'css/font-awesome.min.css' %}" rel="stylesheet">
+	<link href="{% static 'css/prettyPhoto.css' %}" rel="stylesheet">
+	<link href="{% static 'css/price-range.css' %}" rel="stylesheet">
+	<link href="{% static 'css/animate.css' %}" rel="stylesheet">
+	<link href="{% static 'css/main.css' %}" rel="stylesheet">
+	<link href="{% static 'css/responsive.css' %}" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
+	<link rel="shortcut icon" href="{% static 'images/ico/favicon.ico' %}">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+
+
+</head><!--/head-->
+
+<style>
+	.product {
+		border-style: none;
+
+
+	}
+
+	#alert-add-product {
+		background-color: lightgray;
+		color: orange;
+		width: 500px;
+		position: fixed;
+		z-index: 1000;
+		top: 30%;
+		left: 35%;
+		display: none;
+	}
+
+	.pricing {
+		border: 2px;
+		padding: 15px;
+		background-color: orange;
+		color: white;
+		height: 100px;
+		width: 100px;
+		border-radius: 50%;
+	}
+
+	#main div {
+		border: 1px solid black;
+		display: flex;
+		align-items: center;
+	}
+</style>
+
+<body>
+
+	<header id="header"><!--header-->
+
+		<div class="header-middle"><!--header-middle-->
+			<div class="container">
+				<div class="row">
+					<div class="col-sm-4">
+						<div class="logo pull-left">
+							<a href="{% url 'index' %}"><img src="{% static 'images/home/logo.jpg' %}" alt="" style="height: 100px; width: 150px;" /></a>
+						</div>
+
+					</div>
+
+					<div class="col-sm-8">
+						<div class="shop-menu pull-right">
+							<ul class="nav navbar-nav">
+								<li><a href="#"><i class="fa fa-user"></i> Xin chào <b>{{ user.username }}</b></a></li>
+								<li><a href="{% url 'show_cart' %}"><i class="fa fa-shopping-cart"></i> Giỏ hàng <sup
+											class="badge">{{user|count_product_in_card}}</sup></a></li>
+								{% if user.is_authenticated %}
+								<li>
+									<a href="{% url 'account_info' %}">
+										<i class="fa fa-user"></i> Thông tin tài khoản</a>
+								</li>
+
+								<li><a href="{% url 'logout_user' %}"><i class="fa fa-lock"></i> Đăng xuất</a></li>
+								{% else %}
+
+								<li><a href="{% url 'login_user' %}"><i class="fa fa-lock"></i> Đăng Nhập</a></li>
+								{% endif %}
+							</ul>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div><!--/header-middle-->
+
+	</header><!--/header-->
+
+	{% block content %}
+
+	{% endblock content %}
+
+	<footer id="footer"><!--Footer-->
+
+		<div class="footer-widget">
+			<div class="container">
+				<div class="row">
+					<div class="col-sm-2">
+						<div class="single-widget">
+							<h2>Dịch vụ</h2>
+							<ul class="nav nav-pills nav-stacked">
+								<li><a href="#">Trợ giúp trực tuyến</a></li>
+								<li><a href="#">Liên hệ với chúng tôi</a></li>
+								<li><a href="#">Trạng thái đơn hàng</a></li>
+								<li><a href="#">Thay đổi vị trí</a></li>
+								<li><a href="#">Câu hỏi thường gặp</a></li>
+							</ul>
+						</div>
+					</div>
+
+					<div class="col-sm-2">
+						<div class="single-widget">
+							<h2>Chính sách</h2>
+							<ul class="nav nav-pills nav-stacked">
+								<li><a href="#">Điều khoản sử dụng</a></li>
+								<li><a href="#">Chính sách bảo mật</a></li>
+								<li><a href="#">Chính sách hoàn tiền</a></li>
+								<li><a href="#">Hệ thống thanh toán</a></li>
+								<li><a href="#">Hệ thống vé</a></li>
+							</ul>
+						</div>
+					</div>
+					<div class="col-sm-2">
+						<div class="single-widget">
+							<h2>Giới thiệu về Shopper</h2>
+							<ul class="nav nav-pills nav-stacked">
+								<li><a href="#">Thông tin công ty</a></li>
+								<li><a href="#">Tuyển dụng</a></li>
+								<li><a href="#">Vị trí cửa hàng</a></li>
+								<li><a href="#">Chương trình liên kết</a></li>
+								<li><a href="#">Bản quyền</a></li>
+							</ul>
+						</div>
+					</div>
+					<div class="col-sm-3 col-sm-offset-1">
+						<div class="single-widget">
+							<h2>Giới thiệu</h2>
+							<form action="#" class="searchform">
+								<input type="text" placeholder="Địa chỉ email của bạn" />
+								<button type="submit" class="btn btn-default"><i
+										class="fa fa-arrow-circle-o-right">Gửi</i></button>
+								<p>Nhận thông tin cập nhật mới nhất từ ​​<br />trang web của chúng tôi và tự cập nhật...
+								</p>
+							</form>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+		<!-- <div class="footer-bottom">
+			<div class="container">
+				<div class="row">
+					<p class="pull-left">Copyright © 2013 E-SHOPPER</p>
+					<p class="pull-right">Thiết kế bởi <span><a target="_blank"
+								href="http://www.themeum.com">Themeum</a></span></p>
+				</div>
+			</div>
+		</div> -->
+		<!-- Chatbot Nhúng -->
+		<!-- 🌐 Chatbot Tiếng Việt -->
+		<style>
+			#chatbot-button {
+				position: fixed;
+				bottom: 20px;
+				right: 20px;
+				background-color: #0066ff;
+				color: white;
+				border: none;
+				border-radius: 50%;
+				width: 60px;
+				height: 60px;
+				font-size: 28px;
+				cursor: pointer;
+				box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+				z-index: 9999;
+			}
+
+			#chatbot-box {
+				display: none;
+				position: fixed;
+				bottom: 90px;
+				right: 20px;
+				width: 360px;
+				height: 500px;
+				background: white;
+				border: 1px solid #ccc;
+				border-radius: 16px;
+				box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+				z-index: 9999;
+				display: flex;
+				flex-direction: column;
+			}
+
+			#chatbot-box.expanded {
+				width: 90vw !important;
+				height: 90vh !important;
+				bottom: 5vh !important;
+				right: 5vw !important;
+			}
+
+			#chatbot-header {
+				background: #0066ff;
+				color: white;
+				padding: 12px;
+				font-weight: bold;
+				text-align: center;
+				font-size: 16px;
+				position: relative;
+			}
+
+			#chatbot-expand,
+			#chatbot-close {
+				position: absolute;
+				top: 8px;
+				background: transparent;
+				border: none;
+				color: white;
+				font-size: 18px;
+				cursor: pointer;
+			}
+
+			#chatbot-expand {
+				right: 36px;
+			}
+
+			#chatbot-close {
+				right: 8px;
+			}
+
+			#chatbot-messages {
+				padding: 12px;
+				flex: 1;
+				overflow-y: auto;
+				font-size: 14px;
+				background: #f9f9f9;
+			}
+
+			#chatbot-input {
+				display: flex;
+				border-top: 1px solid #ddd;
+			}
+
+			#chatbot-input input {
+				flex: 1;
+				border: none;
+				padding: 12px;
+				font-size: 14px;
+			}
+
+			#chatbot-input button {
+				background: #0066ff;
+				color: white;
+				border: none;
+				padding: 12px 16px;
+				cursor: pointer;
+				font-size: 14px;
+			}
+
+			.chatbot-msg {
+				margin: 6px 0;
+				max-width: 80%;
+				padding: 8px 12px;
+				border-radius: 16px;
+				line-height: 1.4;
+			}
+
+			.user {
+				background: #DCF8C6;
+				align-self: flex-end;
+				text-align: right;
+			}
+
+			.bot {
+				background: #e6ecff;
+				align-self: flex-start;
+				text-align: left;
+			}
+		</style>
+
+		<!-- Chatbox -->
+		<div id="chatbot-box">
+			<div id="chatbot-header">
+				🤖 Trợ lý ảo
+				<button id="chatbot-expand" onclick="toggleExpand()">⛶</button>
+				<button id="chatbot-close" onclick="toggleChat(false)">❌</button>
+			</div>
+			<div id="chatbot-messages">
+				<div class="chatbot-msg bot">Chào bạn! Tôi có thể giúp gì hôm nay?</div>
+			</div>
+			<div id="chatbot-input">
+				<input type="text" id="chatbot-text" placeholder="Nhập câu hỏi..." />
+				<button onclick="sendChat()">Gửi</button>
+			</div>
+		</div>
+
+		<!-- Nút tròn mở chat -->
+		<button id="chatbot-button" onclick="toggleChat(true)">💬</button>
+
+		<!-- Script -->
+		<script>
+			function toggleChat(open) {
+				const box = document.getElementById("chatbot-box");
+				const btn = document.getElementById("chatbot-button");
+				if (open) {
+					box.style.display = "flex";
+					btn.style.display = "none";
+				} else {
+					box.style.display = "none";
+					btn.style.display = "block";
+				}
+			}
+			function toggleExpand() {
+				const box = document.getElementById("chatbot-box");
+				box.classList.toggle("expanded");
+			}
+			function sendChat() {
+				const textEl = document.getElementById("chatbot-text");
+				const text = textEl.value.trim();
+				if (!text) return;
+				const msgBox = document.getElementById("chatbot-messages");
+				msgBox.innerHTML += '<div class="chatbot-msg user">' + text + '</div>';
+				textEl.value = "";
+				setTimeout(function () {
+					const reply = getSmartReply(text);
+					msgBox.innerHTML += '<div class="chatbot-msg bot">' + reply + '</div>';
+					msgBox.scrollTop = msgBox.scrollHeight;
+				}, 500);
+			}
+			function getSmartReply(msg) {
+				msg = msg.toLowerCase();
+				if (msg.match(/(chào|hello|hi)/)) return "Chào bạn! Tôi có thể giúp gì?";
+				if (msg.match(/(giờ mở cửa|gio mo cua|thoi gian mo cua|mo cua)/)) return "Chúng tôi mở cửa từ 8h đến 17h.";
+				if (msg.match(/(sản phẩm|san pham|ban co san pham gi)/)) return "Chúng tôi cung cấp các sản phẩm điện thoại, đa dạng hãng. Ví dụ: IPhone,SamSung,Nokia...";
+				if (msg.match(/(iphone)/)) return "Các sản phẩm iphone hiện nay. Iphone 13,Iphone 14, Iphone 15...";
+				if (msg.match(/(giá|gia|bao gia|gia san pham)/)) return "Bạn vui lòng nói rõ sản phẩm để tôi báo giá nhé!";
+				if (msg.match(/(liên hệ|lien he|cach lien he|)/)) return "Gọi 1800-123-456 hoặc nhắn tin tại đây nhé.";
+				if (msg.match(/(bye|chao|tam biet|hen gap lai||Hẹn gặp lại bạn!|)/)) return "Hẹn gặp lại bạn!";
+				return "Tôi chưa hiểu rõ. Bạn có thể hỏi lại cụ thể hơn không?";
+			}
+
+		</script>
+		{% if request.path == '/' %}
+		<!-- 🎉 Popup Khuyến Mãi -->
+		<!-- 🎉 Popup Khuyến Mãi Có Hình -->
+		<style>
+			#promo-popup {
+				display: none;
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100vw;
+				height: 100vh;
+				background: rgba(0, 0, 0, 0.5);
+				z-index: 10000;
+				justify-content: center;
+				align-items: center;
+			}
+
+			#promo-content {
+				background: white;
+				padding: 20px;
+				border-radius: 16px;
+				max-width: 400px;
+				text-align: center;
+				box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+				position: relative;
+				animation: popupFadeIn 0.5s ease;
+			}
+
+			#promo-content img {
+				width: 100%;
+				border-radius: 12px;
+				margin-bottom: 16px;
+			}
+
+			#promo-content h2 {
+				color: #d60000;
+				margin: 10px 0;
+			}
+
+			#promo-content p {
+				font-size: 16px;
+				color: #333;
+			}
+
+			#promo-close {
+				position: absolute;
+				top: 10px;
+				right: 14px;
+				background: none;
+				border: none;
+				font-size: 22px;
+				color: #999;
+				cursor: pointer;
+			}
+
+			@keyframes popupFadeIn {
+				from {
+					transform: scale(0.9);
+					opacity: 0;
+				}
+
+				to {
+					transform: scale(1);
+					opacity: 1;
+				}
+			}
+		</style>
+
+		<div id="promo-popup">
+			<div id="promo-content">
+				<button id="promo-close" onclick="closePromo()">❌</button>
+				<!-- 🖼️ Hình ảnh khuyến mãi -->
+
+				<h2>🎁 Ưu Đãi Đặc Biệt!</h2>
+				<p>Giảm giá đến <strong>50%</strong> tất cả sản phẩm trong tuần này!</p>
+				<p>Chỉ áp dụng đến <strong>20/4</strong>. Nhanh tay nhé!</p>
+			</div>
+		</div>
+
+		<script>
+			function showPromo() {
+				document.getElementById("promo-popup").style.display = "flex";
+			}
+			function closePromo() {
+				document.getElementById("promo-popup").style.display = "none";
+			}
+			window.addEventListener("load", () => {
+				setTimeout(showPromo, 1000); // sau 1s hiện popup
+			});
+		</script>
+		{% endif %}
+
+
+	</footer><!--/Footer-->
+
+	<script src="{% static 'js/jquery.js' %}"></script>
+	<script src="{% static 'js/bootstrap.min.js' %}"></script>
+	<script src="{% static 'js/jquery.scrollUp.min.js' %}"></script>
+	<script src="{% static 'js/price-range.js' %}"></script>
+	<script src="{% static 'js/jquery.prettyPhoto.js' %}"></script>
+	<script src="{% static 'js/main.js' %}"></script>
+
+	<script>
+		$(document).ready(function () {
+			$(".add-to-cart").each(function () {
+				$(this).click(function () {
+					let url = $(this).data('href');
+					if ($(this).data('logged-user') === "True") {
+						$.ajax({
+							type: "GET",
+							url: url,
+							success: function (data) {
+								$("sup.badge").text(data.quantity);
+								$("#alert-add-product").show();
+								setTimeout(function () {
+									$("#alert-add-product").hide();
+								}, 1000);
+							},
+							error: function (xhr, textStatus, errorThrow) {
+								console.log(errorThrow);
+							}
+						})
+					}
+					else {
+						window.location.href = url;
+					}
+				});
+			});
+		});
+	</script>
+
+
+</body>
+
+</html>

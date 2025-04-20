@@ -1,0 +1,50 @@
+<h2>Danh mục</h2>
+
+<div class="panel-group category-products" id="accordian"><!--category-productsr-->
+    <ul>
+        {% for category in categories %}
+            <div class="panel panel-default">
+                <div class="panel-heading"> <!--Navbar-->
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordian" href="#category-{{category.pk}}">
+                            {% if category.category_set.exists %}
+                                <i class="{{category.icon}}"></i>
+                                <span class="badge pull-right">
+                                    <i class="fa fa-plus"></i>
+                                </span>
+                                {{category.description}}
+                            {% else %}
+                                <a href="{% url 'brands' category_name=category.name %}">
+                                    <i class="{{category.icon}}"></i>
+                                <!-- <a href="?category={{category.name}}" class="{% if category.name == category_display.name %}filtered{% endif %}"> -->
+                                    {{category.description}}
+                                </a>
+                            {% endif %}
+                        </a>
+                    </h4>
+                </div>
+    
+                {% if category.category_set.exists %}
+                    <div id="category-{{category.id}}" class="panel-collapse {% if category.name == category_display.category_parent.name %} in {% else %} collapse {% endif %}">
+                        <div class="panel-body">
+                            <ul>
+                                {% for category_child in category.category_set.all %}
+                                    <li class="{% if category_child.name == category_display.name %}filtered{% endif %}">
+                                        <!-- <a href="?category={{category_child.name}}"> -->
+                                        <a href="{% url 'brands' category_name=category_child.name %}">
+                                            {{category_child.description}}
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                {% endif %}
+                
+            </div>
+            {% endfor %}
+
+
+        </ul>
+    </div><!--/category-products-->
+

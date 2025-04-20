@@ -1,0 +1,347 @@
+{% extends 'base/__base.html' %}
+
+{% block title %}
+	Product Detail
+{% endblock title %}
+
+{% load static %}
+{% load humanize %}
+{% load custom_filter %}
+
+{% block content %}
+<style>
+	.view-product img {
+		border: 1px solid #F7F7F0;
+		height: auto;
+		width: 70%;
+	  }
+
+	.product-img-responsive img {
+		display: block;
+		margin-left: auto;
+		margin-right: auto;
+		width: 60%;
+
+	}
+
+	#similar-product .carousel-inner .item{
+		padding-left:100px;
+	}
+    
+	.rating-form {
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 12px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.rating-form h3 {
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.star-rating select {
+  font-size: 18px;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.rating-form button {
+  margin-top: 10px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+}
+
+.rating-form button:hover {
+  background-color: #0056b3;
+}
+
+.avg-rating {
+  margin-top: 20px;
+  font-weight: bold;
+  font-size: 2.1rem;
+  color: #f39c12;
+}
+
+.user-reviews {
+  margin-top: 15px;
+}
+
+.user-reviews h4 {
+  margin-bottom: 8px;
+}
+
+.user-reviews p {
+  background: #f4f4f4;
+  padding: 8px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+}
+
+.product-tags {
+  margin-top: 10px;
+}
+
+.product-tags .tag {
+  display: inline-block;
+  background-color: #f1f1f1;
+  color: #333;
+  padding: 4px 8px;
+  margin-right: 6px;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+
+</style>
+
+<!--Breadcrumb-->
+<div class="container">
+	<nav aria-label="breadcrumb">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item active" aria-current="page">
+				<a href="{% url 'index' %}">
+					<i class="bi bi-house-door"></i>
+					Trang chủ
+				</a>
+			</li>
+			<li class="breadcrumb-item active" aria-current="page">
+				<a href="{% url 'brands' category_name=product_data.category.name %}">
+					{{product_data.category.description}}
+				</a>
+			</li>
+			<li class="breadcrumb-item" aria-current="page">
+				<a href="">
+					{{product_data.brand}}
+				</a>
+			</li>
+		</ol>
+	</nav>
+</div>
+<!--Breadcrumb-->
+
+<section>
+	<div class="container">
+		<div class="row">			
+			<div class="col-sm-12 padding-right">
+				<div class="product-details"><!--product-details-->
+					<div class="col-sm-6">
+						<div class="view-product">
+							{% if product_data.image|first in 'image' %}
+								<img class="thumb" src="{% static product_data.image %}" alt="{{product_data.name}}" />								
+							{% else %}
+								<img class="thumb" src="{{product_data.image}}" alt="{{product_data.name}}" />												
+							{% endif %}
+							
+						</div>
+
+						{% if product_data.productimage_set.all %}
+						<div id="similar-product" class="carousel slide" data-ride="carousel">		
+							<!-- Wrapper for slides -->
+							<ol class="carousel-indicators">
+								{% for product_image in product_data.productimage_set.all %}
+								<li data-target="#slider-carousel" data-slide-to="{{forloop.counter0}}" {%if forloop.counter0 == 0 %}class="active"{% endif %}></li>
+								{% endfor %}
+							</ol>
+							
+							<div class="carousel-inner">
+								{% for product_image in product_data.productimage_set.all %}
+									<div class="item{%if forloop.counter0 == 0 %} active{% endif %} product-img-responsive">
+										{% if product_image.path|first in 'product_images' %}
+											<img src="{% static product_image.path %}" class="product-img-responsive" alt=""/>		
+										{% else %}	
+											<img src="{{ product_image.path }}" class="product-img-responsive" alt=""/>
+										{% endif %}
+									</div>
+								{% endfor %}
+							</div>
+
+							<!-- Controls -->
+							<a class="left item-control" href="#similar-product" data-slide="prev">
+							  <i class="fa fa-angle-left"></i>
+							</a>
+							<a class="right item-control" href="#similar-product" data-slide="next">
+							  <i class="fa fa-angle-right"></i>
+							</a>
+						</div>
+						{% endif %}
+					</div>
+
+
+					<div class="col-sm-6">
+						<div class="product-information"><!--/product-information-->
+							<img src="{% static 'images/product-details/new.jpg' %}" class="newarrival" alt="" />
+							<h2>{{ product_data.name }}</h2>
+							<p>Mã sản phẩm: 1089772{{ product_data.id}}</p>
+							<!-- <img src="{% static 'images/product-details/rating.png' %}" alt="" /> -->
+							{% if avg_rating %}
+							<div class="avg-rating">
+							  ⭐ Đánh giá trung bình: {{ avg_rating|floatformat:1 }}/5
+							</div>
+						  {% endif %}
+                            
+
+							<br>
+							<span>
+								<span>
+									{% if product_data.id|check_product_sale %}
+										<a style="text-decoration:line-through; color:blueviolet; font-size: 50%; ">{{product_data.price|intcomma}} VND</a>
+										<br>
+										<a>{{product_data.id|get_price_sale|intcomma}} VND</a>
+									{% else %}
+										<a>{{product_data.price|intcomma}} VND</a>
+									{% endif %}
+								</span>
+								<br>
+								<!--Add to cart-->
+								<form action="" method="POST">
+									{% csrf_token %}
+									<label>Số lượng:</label>
+									<input type="text" value="1" name="product_quantity"/>
+									<a data-href="{% url 'add_product_to_cart' product_id=product_data.id %}" class="btn btn-fefault cart" data-logged-user="{{ user.is_authenticated }}">
+										<i class="fa fa-shopping-cart"></i> Thêm giỏ hàng
+									</a>
+								</form>
+								<!--Add to cart-->
+							</span>
+							<!-- <p><b>có sẵn:</b> {% if product_data.stock_quantity > 0 %}Trong kho{%else%}Out Stock{% endif %}</p> -->
+							<p><b>Có sẵn:</b>
+								{% if product_data.stock_quantity > 0 %}
+									Trong kho (Còn lại: {{ product_data.stock_quantity }})
+								{% else %}
+									Hết hàng
+								{% endif %}
+							</p>
+							
+							<p><b>Tình trạng:</b> Mới</p>
+							<p><b>Cửa hàng:</b> MOBILE-STORE</p>
+							<a href=""><img src="{% static 'images/product-details/share.png' %}" class="share img-responsive"  alt="" /></a>
+						</div><!--/product-information-->
+					</div>
+				</div><!--/product-details-->
+			</div>
+
+	
+				<div class="category-tab shop-details-tab"><!--category-tab-->
+					<div class="col-sm-12">
+						<ul class="nav nav-tabs">
+							<li class="active"><a href="#details" data-toggle="tab">Chi tiết</a></li>
+							<!-- <li><a href="#companyprofile" data-toggle="tab">Company Profile</a></li>
+							<li><a href="#tag" data-toggle="tab">Tag</a></li> -->
+							<li><a href="#reviews" data-toggle="tab">Đánh giá </a></li>
+						</ul>
+					</div>
+					<div class="tab-content">
+						<div class="tab-pane fade active in"  id="details" >
+							<div class="col-sm-12">
+								<table class="table table-striped">
+									<thead>
+									  <tr>
+										<th colspan="2">{{info}}</th>
+									  </tr>
+									</thead>
+									
+									<tbody>
+										{% for field in fields %}
+											<tr>
+												<td>{{product_detail|getlabel:field}}</td>
+												<td>{{product_detail|getattribute:field}}</td>
+											</tr>
+										{% endfor %}
+									</tbody>
+								  </table>
+							</div>
+
+						</div>
+						
+						<div class="tab-pane fade" id="reviews" >
+							{% if user.is_authenticated %}
+							<div class="rating-form">
+							  <h3>Đánh giá sản phẩm</h3>
+							  <form method="POST">
+								{% csrf_token %}
+								<div class="star-rating">
+								  {{ form.stars }}
+								</div>
+								<button type="submit">Gửi đánh giá</button>
+							  </form>
+							</div>
+						  {% else %}
+							<p><a href="{% url 'login_user' %}">Đăng nhập</a> để đánh giá sản phẩm.</p>
+						  {% endif %}
+						  
+						  {% if avg_rating %}
+							<div class="avg-rating">
+							  ⭐ Đánh giá trung bình: {{ avg_rating|floatformat:1 }}/5
+							</div>
+						  {% endif %}
+						  
+						  {% if ratings %}
+							<div class="user-reviews">
+							  <h4>Đánh giá từ người dùng</h4>
+							  {% for r in ratings %}
+								<p><strong>{{ r.user.username }}</strong>: 
+								  {{ r.stars }}⭐ - {{ r.comment }}
+								</p>
+							  {% endfor %}
+							</div>
+						  {% endif %}
+						  
+						</div>
+						
+					</div>
+				</div><!--/category-tab-->
+
+				<div id="alert-add-product">
+					<h1  style="font-size: 300%; margin: auto; text-align: center" >
+						<span class="glyphicon glyphicon-ok-sign"></span>
+					</h1>
+					<h1 id="content" style="text-align: center;">
+						{{product_data.id|message_alert}}
+					</h1>
+				</div>
+				
+			</div>
+		</div>
+	</div>
+
+
+</section>
+
+<script>
+	$(document).ready(function() {
+		$(".cart").each(function() {
+			$(this).click(function() {
+				let url = $(this).data('href');
+				if ($(this).data('logged-user') === "True") {
+					$.ajax({
+						type: "GET",
+						url: url,
+						success: function(data) {
+							$("sup.badge").text(data.quantity);
+							$("#alert-add-product").show();
+							setTimeout(function() {
+								$("#alert-add-product").hide();
+							}, 1000);
+						},
+						error: function(xhr, textStatus, errorThrow) {
+							console.log(errorThrow);
+						}
+					})
+				}
+				else {
+					window.location.href = url;
+				}
+			});
+		});
+	});
+</script>
+
+{% endblock content %}

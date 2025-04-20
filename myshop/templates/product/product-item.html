@@ -1,0 +1,37 @@
+{% load static %}
+{% load humanize %}
+{% load custom_filter %}
+<div class="col-sm-4">
+    <div class="product-image-wrapper">
+        <div class="single-products">
+            <div class="productinfo text-center" style="min-height: 430px">
+                <a href="{% url 'view_product' product_id=product.id %}">
+                    {% if product.image|first in 'image' %}
+                        <img class="thumb" src="{% static product.image %}" alt="{{product.name}}" />								
+                    {% else %}
+                        <img class="thumb" src="{{product.image}}" alt="{{product.name}}" />												
+                    {% endif %}
+                </a>
+                {% if product.id|check_product_sale %}
+                    <h6 style="position:absolute; bottom:34%; left:15%; text-decoration:line-through; color:blueviolet;">{{product.price|intcomma}} VND</h6>
+                    <h2>{{product.id|get_price_sale|intcomma}} VND</h2>
+                {% else %}
+                    <h2>{{product.price|intcomma}} VND</h2>
+                {% endif %}
+                <p>{{product.name}}</p>
+                <!-- <p>Thương hiệu: {{product.brand.name}}</p> -->
+                <a data-href="{% if user.is_authenticated %} {% url 'add_product_to_cart' product_id=product.id %} {% else %} {% url 'login_user' %} {% endif %}"
+                    class="btn btn-default add-to-cart"
+                    data-logged-user="{{ user.is_authenticated }}">
+                    <i class="fa fa-shopping-cart"></i>Thêm giỏ hàng
+                </a>
+            </div>
+
+            {% if product.id|check_product_sale %} <!--promotion-->
+                <!-- <img src="{% static 'images/home/sale.png' %}" class="new" alt="website template image"> -->
+                <span class="new" style="background-color: orange; color: white; height:20px; margin:auto;">Giảm {{product.id|get_product_discount}} %</span>
+            {% endif %} <!--promotion-->
+        </div>
+    </div>
+</div>
+
