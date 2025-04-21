@@ -1,6 +1,6 @@
 from django.urls import re_path, path
 from django.contrib.auth import views as auth_views
-from . import user_views, views,admin_views
+from . import user_views, views
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -24,7 +24,6 @@ urlpatterns = [
     # re_path(r"^user/change$", user_views.change_password, name='change_password'),
     # re_path(r"^user/validate$", user_views.validate_username, name='validate_username'),
     re_path('account/', views.account_info, name='account_info'),
-    re_path(r"^admin/dashboard$", admin_views.admin_dashboard, name='admin_dashboard'),
 
 
 

@@ -1,0 +1,31 @@
+{% extends "base_admin.html" %}
+{% load static %}
+{% block content %}
+<h3>Danh sách Thương hiệu</h3>
+
+<a href="{% url 'custom_admin:brand_add' %}" class="btn btn-primary mb-3">+ Thêm mới</a>
+
+<table class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>ID</th><th>Tên</th><th>Quốc gia</th><th>Logo</th><th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for brand in brands %}
+        <tr>
+            <td>{{ brand.id }}</td>
+            <td>{{ brand.name }}</td>
+            <td>{{ brand.country }}</td>
+            <td><img src="{% static brand.icon %}" alt="{{ brand.name }}" style="width: 50px; height: auto;"></td>
+            <td>
+                <a href="{% url 'custom_admin:brand_edit' brand.id %}" class="btn btn-sm btn-warning">Sửa</a>
+                <a href="{% url 'custom_admin:brand_delete' brand.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Xoá brand này?')">Xoá</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4">Không có brand nào.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

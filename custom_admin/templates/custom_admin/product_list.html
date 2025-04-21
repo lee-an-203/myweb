@@ -1,0 +1,58 @@
+{% extends "base_admin.html" %}
+{% load humanize %}
+{% block content %}
+<h3>Danh sách sản phẩm</h3>
+
+<a href="{% url 'custom_admin:product_add' %}" class="btn btn-primary mb-3">+ Thêm mới</a>
+<form method="get" class="mb-3">
+  <div class="input-group" style="max-width: 500px;">
+    <input type="text" name="q" value="{{ query }}" class="form-control"
+      placeholder="Tìm theo tên sản phẩm hoặc thương hiệu...">
+    <button type="submit" class="btn btn-outline-primary">Tìm kiếm</button>
+    <a href="{% url 'custom_admin:product_list' %}" class="btn btn-outline-secondary">Đặt lại</a>
+  </div>
+</form>
+
+<table class="table table-bordered table-hover">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Tên</th>
+      <th>Nhà cung cấp</th>
+      <th>Danh mục</th>
+      <th>Giá</th>
+      <th>Kho</th>
+      <th>Ảnh</th>
+      <th>Trạng thái</th>
+      <th>Hành động</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for product in products %}
+    <tr>
+      <td>{{ product.id }}</td>
+      <td>{{ product.name }}</td>
+      <td>{{ product.brand }}</td>
+      <td>{{ product.category }}</td>
+      <td>{{ product.price|intcomma }} VND</td>
+      <td>{{ product.stock_quantity }}</td>
+      <td>
+        <img src="{{ product.image }}" alt="{{ product.name }}" style="width: 50px; height: auto;">
+      </td>
+      <td>
+        {% if product.status %}✔️ Còn bán{% else %}❌ Dừng bán{% endif %}
+      </td>
+      <td>
+        <a href="{% url 'custom_admin:product_edit' product.id %}" class="btn btn-sm btn-warning">Sửa</a>
+        <a href="{% url 'custom_admin:product_delete' product.id %}" class="btn btn-sm btn-danger"
+          onclick="return confirm('Xoá sản phẩm này?')">Xoá</a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="7">Không có sản phẩm nào.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

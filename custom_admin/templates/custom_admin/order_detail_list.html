@@ -1,0 +1,35 @@
+{% extends "base_admin.html" %}
+{% load humanize %}
+{% block content %}
+<h3>Danh sách chi tiết đơn hàng</h3>
+
+<table class="table table-bordered table-hover">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Đơn hàng</th>
+      <th>Sản phẩm</th>
+      <th>Số lượng</th>
+      <th>Thành tiền</th>
+      <th>Hành động</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for od in order_details %}
+    <tr>
+      <td>{{ od.id }}</td>
+      <td>#{{ od.order.id }}</td>
+      <td>{{ od.product.name }}</td>
+      <td>{{ od.quantity }}</td>
+      <td>{{ od.amount|intcomma }} VND</td>
+      <td>
+        <a href="{% url 'custom_admin:order_detail_edit' od.id %}" class="btn btn-sm btn-warning">Sửa</a>
+        <a href="{% url 'custom_admin:order_detail_delete' od.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Xoá chi tiết này?')">Xoá</a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="6">Không có dữ liệu.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

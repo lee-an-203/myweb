@@ -1,0 +1,75 @@
+{% extends "base_admin.html" %}
+
+{% block content %}
+<h2>📊 Báo cáo tổng hợp</h2>
+<div class="container">
+    <h1>Thống kê quản trị</h1>
+
+    <h2>Doanh thu</h2>
+    <ul>
+        <li>Hôm nay: {{ revenue_today }} VND</li>
+        <li>Tháng này: {{ revenue_month }} VND</li>
+        <li>Năm nay: {{ revenue_year }} VND</li>
+    </ul>
+
+    <canvas id="revenueChart"></canvas>
+
+    <h2>Số đơn hàng</h2>
+    <ul>
+        <li>Hôm nay: {{ orders_today }}</li>
+        <li>Tháng này: {{ orders_month }}</li>
+        <li>Năm nay: {{ orders_year }}</li>
+    </ul>
+
+    <canvas id="ordersChart"></canvas>
+
+    <h2>Top 5 sản phẩm bán chạy</h2>
+    <ul>
+        {% for item in top_products %}
+        <li>{{ item.product__name }}: {{ item.total_sold }} cái</li>
+        {% endfor %}
+    </ul>
+
+    <canvas id="productChart"></canvas>
+
+    <h2>Người dùng mới trong tháng: {{ new_users }}</h2>
+</div>
+
+<script>
+    const revenueChart = new Chart(document.getElementById('revenueChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Hôm nay', 'Tháng này', 'Năm nay'],
+            datasets: [{
+                label: 'Doanh thu (VND)',
+                data: [{{ revenue_today }}, {{ revenue_month }}, {{ revenue_year }}],
+    backgroundColor: '#4caf50'
+            }]
+        }
+    });
+
+    const ordersChart = new Chart(document.getElementById('ordersChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Hôm nay', 'Tháng này', 'Năm nay'],
+            datasets: [{
+                label: 'Số đơn hàng',
+                data: [{{ orders_today }}, {{ orders_month }}, {{ orders_year }}],
+    backgroundColor: '#2196f3'
+            }]
+        }
+    });
+
+    const productChart = new Chart(document.getElementById('productChart'), {
+        type: 'bar',
+        data: {
+            labels: [{% for item in top_products %}'{{ item.product__name }}'{% if not forloop.last %}, {% endif %}{% endfor %}],
+    datasets: [{
+        label: 'Số lượng bán',
+        data: [{% for item in top_products %}{{ item.total_sold }}{% if not forloop.last %}, {% endif %} {% endfor %}],
+    backgroundColor: '#ff9800'
+            }]
+        }
+    });
+</script>
+{% endblock %}

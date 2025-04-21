@@ -1,0 +1,46 @@
+{% extends "base_admin.html" %}
+{% load humanize %}
+{% block content %}
+<h3>Danh sách đơn hàng</h3>
+
+
+
+<table class="table table-bordered table-hover">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Khách hàng</th>
+      <th>Ngày tạo</th>
+      <th>Tổng tiền</th>
+      <th>Số điện thoại</th>
+      <th>Địa chỉ</th>
+      <th>Trạng thái</th>
+      <th>Hành động</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for order in orders %}
+    <tr>
+      <td>#{{ order.id }}</td>
+      <td>{{ order.user.username }}</td>
+      <td>{{ order.create_date }}</td>
+      <td>{{ order.total_amount|intcomma }} VND</td>
+      <td>{{ order.phone }}</td>
+      <td>{{ order.address }}</td>
+      <td>
+        {% if order.status == 0 %}🕒 Chưa thanh toán{% else %}✅ Đã thanh toán{% endif %}
+      </td>
+      <td>
+        <a href="{% url 'custom_admin:order_edit' order.id %}" class="btn btn-sm btn-warning">Sửa</a>
+        <a href="{% url 'custom_admin:order_delete' order.id %}" class="btn btn-sm btn-danger"
+          onclick="return confirm('Bạn có chắc muốn xoá đơn hàng này?')">Xoá</a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="6">Không có đơn hàng nào.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

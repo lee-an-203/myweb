@@ -42,22 +42,32 @@ def edit_account(request):
         avatar_form = AvatarUpdateForm(request.POST, request.FILES, instance=request.user.profile)
         password_form = CustomPasswordChangeForm(user=request.user, data=request.POST)
 
-        if 'update_info' in request.POST:
-            if user_form.is_valid() and avatar_form.is_valid():
-                user_form.save()
-                avatar_form.save()
-                return redirect('account_info')
+        if user is not None:
+                login_required(request, user)
+                if user.is_staff:
+                    return redirect('custom_admin:dashboard')  # Trang quản trị admin
+                else:
+                    return redirect('account_info')  # Trang người dùng
+        else:
+            messages.error(request, "Sai tài khoản hoặc mật khẩu.")
 
-        elif 'change_password' in request.POST:
-            if password_form.is_valid():
-                user = password_form.save()
-                update_session_auth_hash(request, user)
-                return redirect('account_info')
 
-    else:
-        user_form = UserUpdateForm(instance=request.user)
-        avatar_form = AvatarUpdateForm(instance=request.user.profile)
-        password_form = CustomPasswordChangeForm(user=request.user)
+    #     if 'update_info' in request.POST:
+    #         if user_form.is_valid() and avatar_form.is_valid():
+    #             user_form.save()
+    #             avatar_form.save()
+    #             return redirect('account_info')
+
+    #     elif 'change_password' in request.POST:
+    #         if password_form.is_valid():
+    #             user = password_form.save()
+    #             update_session_auth_hash(request, user)
+    #             return redirect('account_info')
+
+    # else:
+    #     user_form = UserUpdateForm(instance=request.user)
+    #     avatar_form = AvatarUpdateForm(instance=request.user.profile)
+    #     password_form = CustomPasswordChangeForm(user=request.user)
 
     context = {
         'user_form': user_form,
@@ -368,29 +378,29 @@ def user_logout(request):
     return redirect('login_user')  # hoặc 'index' nếu bạn muốn về trang chủ
 
 
-def admin_dashboard(request):
-    # Thống kê cơ bản
-    total_users = User.objects.count()
-    total_orders = Order.objects.count()
-    total_revenue = Order.objects.aggregate(Sum('total_price'))['total_price__sum'] or 0
+# def admin_dashboard(request):
+#     # Thống kê cơ bản
+#     total_users = User.objects.count()
+#     total_orders = Order.objects.count()
+#     total_revenue = Order.objects.aggregate(Sum('total_price'))['total_price__sum'] or 0
 
-    # Doanh thu theo tháng
-    revenue_by_month = (
-        Order.objects
-        .annotate(month=TruncMonth('created_at'))
-        .values('month')
-        .annotate(total=Sum('total_price'))
-        .order_by('month')
-    )
+#     # Doanh thu theo tháng
+#     revenue_by_month = (
+#         Order.objects
+#         .annotate(month=TruncMonth('created_at'))
+#         .values('month')
+#         .annotate(total=Sum('total_price'))
+#         .order_by('month')
+#     )
 
-    labels = [entry['month'].strftime('%m/%Y') for entry in revenue_by_month]
-    data = [entry['total'] for entry in revenue_by_month]
+#     labels = [entry['month'].strftime('%m/%Y') for entry in revenue_by_month]
+#     data = [entry['total'] for entry in revenue_by_month]
 
-    context = {
-        'total_users': total_users,
-        'total_orders': total_orders,
-        'total_revenue': total_revenue,
-        'chart_labels': json.dumps(labels),
-        'chart_data': json.dumps(data),
-    }
-    return render(request, 'admin_dashboard.html', context)
+#     context = {
+#         'total_users': total_users,
+#         'total_orders': total_orders,
+#         'total_revenue': total_revenue,
+#         'chart_labels': json.dumps(labels),
+#         'chart_data': json.dumps(data),
+#     }
+#     return render(request, 'custom_admin/admin_dashboard.html', context)

@@ -1,0 +1,36 @@
+{% extends "base_admin.html" %}
+{% block content %}
+<h3>Danh sách khuyến mãi</h3>
+
+<a href="{% url 'custom_admin:promotion_add' %}" class="btn btn-primary mb-3">+ Thêm mới</a>
+
+<table class="table table-bordered table-hover">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Sản phẩm</th>
+      <th>Giảm giá (%)</th>
+      <th>Bắt đầu</th>
+      <th>Kết thúc</th>
+      <th>Hành động</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for promo in promotions %}
+    <tr>
+      <td>{{ promo.id }}</td>
+      <td>{{ promo.product.name }}</td>
+      <td>{{ promo.discount }}%</td>
+      <td>{{ promo.start_date }}</td>
+      <td>{{ promo.end_date }}</td>
+      <td>
+        <a href="{% url 'custom_admin:promotion_edit' promo.id %}" class="btn btn-sm btn-warning">Sửa</a>
+        <a href="{% url 'custom_admin:promotion_delete' promo.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Xoá khuyến mãi này?')">Xoá</a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="6">Không có khuyến mãi nào.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

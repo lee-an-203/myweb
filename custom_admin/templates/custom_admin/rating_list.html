@@ -1,0 +1,36 @@
+{% extends "base_admin.html" %}
+{% load static %}
+
+{% block content %}
+<h3>Danh sách Đánh giá</h3>
+
+<a href="{% url 'custom_admin:rating_add' %}" class="btn btn-primary mb-3">+ Thêm mới</a>
+
+<table class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Sản phẩm</th>
+            <th>User</th>
+            <th>Sao</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for rating in ratings %}
+        <tr>
+            <td>{{ rating.id }}</td>
+            <td>{{ rating.product.name }}</td>
+            <td>{{ rating.user.username }}</td>
+            <td>{{ rating.stars }}</td>
+            <td>
+                <a href="{% url 'custom_admin:rating_edit' rating.id %}" class="btn btn-sm btn-warning">Sửa</a>
+                <a href="{% url 'custom_admin:rating_delete' rating.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Xoá đánh giá này?')">Xoá</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5">Không có đánh giá nào.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

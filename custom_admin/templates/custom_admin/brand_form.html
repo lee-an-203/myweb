@@ -1,0 +1,10 @@
+{% extends "base_admin.html" %}
+{% block content %}
+<h3>{{ title }}</h3>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-success">Lưu</button>
+    <a href="{% url 'custom_admin:brand_list' %}" class="btn btn-secondary">Quay lại</a>
+</form>
+{% endblock %}
