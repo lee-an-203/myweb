@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'myshop.apps.MyshopConfig',
     'django.contrib.humanize',
     'custom_admin',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [

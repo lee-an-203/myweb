@@ -67,3 +67,6 @@ class RatingForm(forms.ModelForm):
         self.fields['product'].queryset = Product.objects.all()
 
 
+
+
+

@@ -54,5 +54,5 @@ urlpatterns = [
     path('ratings/<int:pk>/edit/', views.rating_edit, name='rating_edit'),
     path('ratings/<int:pk>/delete/', views.rating_delete, name='rating_delete'),
 
-    path('dashboard/', admin_views.dashboard, name='admin_dashboard'),
+
 ]

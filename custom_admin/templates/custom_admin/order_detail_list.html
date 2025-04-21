@@ -3,8 +3,9 @@
 {% block content %}
 <h3>Danh sách chi tiết đơn hàng</h3>
 
-<table class="table table-bordered table-hover">
-  <thead>
+<div style="max-height: 500px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 5px;">
+  <table class="table table-bordered table-hover mb-0">
+    <thead class="table-light">
     <tr>
       <th>ID</th>
       <th>Đơn hàng</th>
@@ -32,4 +33,7 @@
     {% endfor %}
   </tbody>
 </table>
+</div>
+
+
 {% endblock %}

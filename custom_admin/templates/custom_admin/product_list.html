@@ -13,46 +13,48 @@
   </div>
 </form>
 
-<table class="table table-bordered table-hover">
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Tên</th>
-      <th>Nhà cung cấp</th>
-      <th>Danh mục</th>
-      <th>Giá</th>
-      <th>Kho</th>
-      <th>Ảnh</th>
-      <th>Trạng thái</th>
-      <th>Hành động</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for product in products %}
-    <tr>
-      <td>{{ product.id }}</td>
-      <td>{{ product.name }}</td>
-      <td>{{ product.brand }}</td>
-      <td>{{ product.category }}</td>
-      <td>{{ product.price|intcomma }} VND</td>
-      <td>{{ product.stock_quantity }}</td>
-      <td>
-        <img src="{{ product.image }}" alt="{{ product.name }}" style="width: 50px; height: auto;">
-      </td>
-      <td>
-        {% if product.status %}✔️ Còn bán{% else %}❌ Dừng bán{% endif %}
-      </td>
-      <td>
-        <a href="{% url 'custom_admin:product_edit' product.id %}" class="btn btn-sm btn-warning">Sửa</a>
-        <a href="{% url 'custom_admin:product_delete' product.id %}" class="btn btn-sm btn-danger"
-          onclick="return confirm('Xoá sản phẩm này?')">Xoá</a>
-      </td>
-    </tr>
-    {% empty %}
-    <tr>
-      <td colspan="7">Không có sản phẩm nào.</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+<div style="max-height: 500px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 5px;">
+  <table class="table table-bordered table-hover mb-0">
+    <thead class="table-light">
+      <tr>
+        <th>ID</th>
+        <th>Tên</th>
+        <th>Nhà cung cấp</th>
+        <th>Danh mục</th>
+        <th>Giá</th>
+        <th>Kho</th>
+        <th>Ảnh</th>
+        <th>Trạng thái</th>
+        <th>Hành động</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for product in products %}
+      <tr>
+        <td>{{ product.id }}</td>
+        <td>{{ product.name }}</td>
+        <td>{{ product.brand }}</td>
+        <td>{{ product.category }}</td>
+        <td>{{ product.price|intcomma }} VND</td>
+        <td>{{ product.stock_quantity }}</td>
+        <td>
+          <img src="{{ product.image }}" alt="{{ product.name }}" style="width: 50px; height: auto;">
+        </td>
+        <td>
+          {% if product.status %}✔️ Còn bán{% else %}❌ Dừng bán{% endif %}
+        </td>
+        <td>
+          <a href="{% url 'custom_admin:product_edit' product.id %}" class="btn btn-sm btn-warning">Sửa</a>
+          <a href="{% url 'custom_admin:product_delete' product.id %}" class="btn btn-sm btn-danger"
+            onclick="return confirm('Xoá sản phẩm này?')">Xoá</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="7">Không có sản phẩm nào.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endblock %}

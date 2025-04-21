@@ -1,10 +1,65 @@
 {% extends "base_admin.html" %}
+{% load widget_tweaks %}
 {% block content %}
-<h3>{{ title }}</h3>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-success">Lưu</button>
-    <a href="{% url 'custom_admin:category_list' %}" class="btn btn-secondary">Quay lại</a>
-</form>
+<div class="container py-4">
+    <h3 class="text-primary mb-4">{{ title }}</h3>
+
+    <div class="card shadow-sm rounded-3">
+        <div class="card-body">
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+
+                <!-- Trường: Tên danh mục -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold" for="{{ form.name.id_for_label }}">Tên danh mục</label>
+                    {{ form.name|add_class:"form-control" }}
+                    {% if form.name.errors %}
+                    <div class="invalid-feedback">
+                        {{ form.name.errors.0 }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Trường: Mô tả -->
+                <div class="mb-3">
+                    <label for="{{ form.description.id_for_label }}" class="form-label fw-semibold">Mô tả</label>
+                    {{ form.description|add_class:"form-control"|attr:"rows:3" }}
+                    {% if form.description.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.description.errors.0 }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Biểu tượng -->
+                <div class="mb-3">
+                    <label for="{{ form.icon.id_for_label }}" class="form-label fw-semibold">Biểu tượng</label>
+                    {{ form.icon|add_class:"form-control"|attr:"rows:3" }}
+                    {% if form.icon.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.icon.errors.0 }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Trường: Danh mục cha -->
+                <!-- <div class="mb-3">
+                    <label class="form-label fw-bold" for="{{ form.parent.id_for_label }}">Danh mục cha</label>
+                    {{ form.parent|add_class:"form-control" }}
+                    {% if form.parent.errors %}
+                    <div class="invalid-feedback">
+                        {{ form.parent.errors.0 }}
+                    </div>
+                    {% endif %}
+                </div> -->
+
+                <div class="d-flex justify-content-between">
+                    <button type="submit" class="btn btn-success px-4">💾 Lưu</button>
+                    <a href="{% url 'custom_admin:category_list' %}" class="btn btn-secondary px-4">↩ Quay lại</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -3,6 +3,7 @@
 <h3>Danh sách cấu hình sản phẩm</h3>
 
 <a href="{% url 'custom_admin:detail_add' %}" class="btn btn-primary mb-3">+ Thêm mới</a>
+
 <form method="get" class="mb-3">
     <div class="input-group" style="max-width: 400px;">
         <input type="text" name="query" value="{{ query }}" class="form-control"
@@ -12,50 +13,53 @@
     </div>
 </form>
 
-<table class="table table-bordered table-hover">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Tên</th>
-            <th>Màn hình</th>
-            <th>Chip</th>
-            <th>RAM</th>
-            <th>Hệ điều hành</th>
-            <th>Camera trước</th>
-            <th>Camera sau</th>
-            <th>Bộ nhớ trong</th>
-            <th>Sim</th>
-            <th>Pin</th>
-            <th>Sạc</th>
-            <th>Hành động</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for detail in details %}
-        <tr>
-            <td>{{ detail.id }}</td>
-            <td>{{ detail.name }}</td>
-            <td>{{ detail.screen }}</td>
-            <td>{{ detail.chip }}</td>
-            <td>{{ detail.RAM }}</td>
-            <td>{{ detail.operating_system }}</td>
-            <td>{{ detail.rear_camera }}</td>
-            <td>{{ detail.front_camera }}</td>
-            <td>{{ detail.memory }}</td>
-            <td>{{ detail.sim }}</td>
-            <td>{{ detail.battery }}</td>
-            <td>{{ detail.adapter }}</td>
-            <td>
-                <a href="{% url 'custom_admin:detail_edit' detail.id %}" class="btn btn-sm btn-warning">Sửa</a>
-                <a href="{% url 'custom_admin:detail_delete' detail.id %}" class="btn btn-sm btn-danger"
-                    onclick="return confirm('Bạn có chắc muốn xoá?')">Xoá</a>
-            </td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="6">Không có cấu hình nào.</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<!-- Container có scroll khi nội dung vượt quá chiều cao -->
+<div style="max-height: 500px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 5px;">
+    <table class="table table-bordered table-hover mb-0">
+        <thead class="table-light">
+            <tr>
+                <th>ID</th>
+                <th>Tên</th>
+                <th>Màn hình</th>
+                <th>Chip</th>
+                <th>RAM</th>
+                <th>Hệ điều hành</th>
+                <th>Camera trước</th>
+                <th>Camera sau</th>
+                <th>Bộ nhớ trong</th>
+                <th>Sim</th>
+                <th>Pin</th>
+                <th>Sạc</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for detail in details %}
+            <tr>
+                <td>{{ detail.id }}</td>
+                <td>{{ detail.name }}</td>
+                <td>{{ detail.screen }}</td>
+                <td>{{ detail.chip }}</td>
+                <td>{{ detail.RAM }}</td>
+                <td>{{ detail.operating_system }}</td>
+                <td>{{ detail.rear_camera }}</td>
+                <td>{{ detail.front_camera }}</td>
+                <td>{{ detail.memory }}</td>
+                <td>{{ detail.sim }}</td>
+                <td>{{ detail.battery }}</td>
+                <td>{{ detail.adapter }}</td>
+                <td>
+                    <a href="{% url 'custom_admin:detail_edit' detail.id %}" class="btn btn-sm btn-warning">Sửa</a>
+                    <a href="{% url 'custom_admin:detail_delete' detail.id %}" class="btn btn-sm btn-danger"
+                        onclick="return confirm('Bạn có chắc muốn xoá?')">Xoá</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="13" class="text-center">Không có cấu hình nào.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}
