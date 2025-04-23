@@ -14,9 +14,9 @@
                 </a>
                 {% if product.id|check_product_sale %}
                     <h6 style="position:absolute; bottom:34%; left:15%; text-decoration:line-through; color:blueviolet;">{{product.price|intcomma}} VND</h6>
-                    <h2>{{product.id|get_price_sale|intcomma}} VND</h2>
+                    <h2 style="text-align: center;">{{product.id|get_price_sale|intcomma}} VND</h2>
                 {% else %}
-                    <h2>{{product.price|intcomma}} VND</h2>
+                    <h2 style="text-align: center;">{{product.price|intcomma}} VND</h2>
                 {% endif %}
                 <p>{{product.name}}</p>
                 <!-- <p>Thương hiệu: {{product.brand.name}}</p> -->

@@ -59,8 +59,6 @@ ROOT_URLCONF = 'myweb.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'APP_DIRS': True,
         'DIRS': [os.path.join(BASE_DIR, 'templates')],  # <-- Dòng này rất quan trọng
         'APP_DIRS': True,
         'OPTIONS': {

@@ -1,12 +1,12 @@
 from django.urls import path
 from . import views
-from . import admin_views
+
 
 app_name = "custom_admin"
 
 urlpatterns = [
-    path("login/", views.admin_login, name="admin_login"),
-    path("logout/", views.admin_logout, name="admin_logout"),
+
+
 
     path("admin_dashboard/", views.admin_dashboard, name="dashboard"),
 

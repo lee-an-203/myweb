@@ -4,6 +4,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.models import User
 from myshop.forms import RegistrationForm, LoginForm
+from django.contrib.auth.decorators import login_required
 
 def register_user(request):
     form = RegistrationForm()
@@ -51,8 +52,6 @@ def login_user(request):
         }
     )
 
-# Hàm phía server nhận từ Javascript gửi lên
-# JSON gửi từ JS <=> thì server cũng gửi lại JSON
 
 def validate_username(request):
     if request.method == "POST":
@@ -62,3 +61,4 @@ def validate_username(request):
             return JsonResponse({'message': f'{username} đã trùng'}, status=409) # 409 Conflict
         except User.DoesNotExist:
             return JsonResponse({'message': 'OK'}, status=200)
+

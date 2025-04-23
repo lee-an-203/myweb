@@ -1,67 +1,122 @@
 {% extends 'base/__base.html' %}
 {% block title %}
-	Home |
+Home |
 {% endblock title %}
 {% block content %}
-	{% load static %}
-	{% load humanize %}
-	{% load custom_filter %}
+{% load static %}
+{% load humanize %}
+{% load custom_filter %}
 
+<style>
+    .features_items h2 {
+        font-size: 24px;
+        font-weight: bold;
+        text-align: left;
+        margin-top: 20px;
+        margin-bottom: 15px;
+        color: #333;
+    }
+</style>
 
-	<script>
-		$(document).ready(function(){
-		  $("#mouse").mouseenter(function(){
-			$(this).css("color", "red");
-			$(this).css("background-color", "lightgrey");
-		  });
-		  $("#mouse").mouseleave(function(){
-			$(this).css("color", "black");
-			$(this).css("background-color", "white");
-		  });
-		});
-		
-	</script>
+<script>
+    $(document).ready(function () {
+        $("#mouse").mouseenter(function () {
+            $(this).css("color", "red");
+            $(this).css("background-color", "lightgrey");
+        });
+        $("#mouse").mouseleave(function () {
+            $(this).css("color", "black");
+            $(this).css("background-color", "white");
+        });
+    });
+</script>
 
-	<section>
-		<div class="container">
-			<div class="row">
-				<div class="col-sm-3">
-					<div class="left-sidebar">
-						{% include 'common/categories.html' %} <!--load category-->
-						<div class="shipping text-center"><!--shipping-->
-							<img src="{% static 'images/home/w7wo0q2b.png' %}" alt="" />
-							<img src="{% static 'images/home/shipping.jpg' %}" alt="" />
-						</div><!--/shipping-->
-					
-					</div>
-				</div>
-				
-				<div class="col-sm-9 padding-right">
-					<div class="features_items"><!--features_items-->
-						<h2 class="title text-center"></h2>
-						<div>
-							{% for product in products %}
-								{% include 'product/product-item.html' %}
-							{% endfor %}
-						</div>
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="left-sidebar">
+                    {% include 'common/categories.html' %}
+                    <div class="shipping text-center">
+                        <img src="{% static 'images/home/w7wo0q2b.png' %}" alt="" />
+                        <img src="{% static 'images/home/shipping.jpg' %}" alt="" />
+                    </div>
+                </div>
+            </div>
 
-					</div><!--features_items-->
-					
-				</div>
+            <div class="col-sm-9 padding-right">
+                <div class="features_items">
+                    {% if query %}
+                    <div style="margin-bottom: 20px;">
+                        <h2>Kết quả tìm kiếm cho: "{{ query }}"</h2>
+                    </div>
+                    <div class="row">
+                        {% for product in page_obj %}
+                        {% include 'product/product-item.html' %}
+                        {% empty %}
+                        <p>Không tìm thấy sản phẩm phù hợp.</p>
+                        {% endfor %}
+                    </div>
+                    <div class="pagination">
+                        {% if page_obj.has_previous %}
+                        <a href="?q={{ query }}&page={{ page_obj.previous_page_number }}">Trước</a>
+                        {% endif %}
+                        <span>Trang {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+                        {% if page_obj.has_next %}
+                        <a href="?q={{ query }}&page={{ page_obj.next_page_number }}">Tiếp</a>
+                        {% endif %}
+                    </div>
+                    {% else %}
+                    <!-- SẢN PHẨM NỔI BẬT -->
+                    <div style="margin-bottom: 20px;">
+                        <h2>Sản phẩm nổi bật</h2>
+                    </div>
+                    <div class="row">
+                        {% for product in featured_page %}
+                        {% include 'product/product-item.html' %}
+                        {% endfor %}
+                    </div>
+                    <div class="pagination">
+                        {% if featured_page.has_previous %}
+                        <a href="?featured_page={{ featured_page.previous_page_number }}">Trước</a>
+                        {% endif %}
+                        <span>Trang {{ featured_page.number }} / {{ featured_page.paginator.num_pages }}</span>
+                        {% if featured_page.has_next %}
+                        <a href="?featured_page={{ featured_page.next_page_number }}">Tiếp</a>
+                        {% endif %}
+                    </div>
 
-				<div id="alert-add-product">
-					<h1  style="font-size: 300%; margin: auto; text-align: center" >
-						<span class="glyphicon glyphicon-ok-sign"></span>
-					</h1>
-					<h1 id="content" style="text-align: center;">
-						Bạn đã thêm sản phẩm thành công vào giỏ hàng	
-					</h1>
-				</div>
-			</div>
-		</div>
-	</section>
+                    <!-- SẢN PHẨM BÁN CHẠY -->
+                    <div style="margin-top: 40px; margin-bottom: 20px;">
+                        <h2>Sản phẩm bán chạy</h2>
+                    </div>
+                    <div class="row">
+                        {% for product in bestseller_page %}
+                        {% include 'product/product-item.html' %}
+                        {% endfor %}
+                    </div>
+                    <div class="pagination">
+                        {% if bestseller_page.has_previous %}
+                        <a href="?bestseller_page={{ bestseller_page.previous_page_number }}">Trước</a>
+                        {% endif %}
+                        <span>Trang {{ bestseller_page.number }} / {{ bestseller_page.paginator.num_pages }}</span>
+                        {% if bestseller_page.has_next %}
+                        <a href="?bestseller_page={{ bestseller_page.next_page_number }}">Tiếp</a>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
 
-
-
+            <div id="alert-add-product">
+                <h1 style="font-size: 300%; margin: auto; text-align: center">
+                    <span class="glyphicon glyphicon-ok-sign"></span>
+                </h1>
+                <h1 id="content" style="text-align: center;">
+                    Bạn đã thêm sản phẩm thành công vào giỏ hàng
+                </h1>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock content %}
-	
