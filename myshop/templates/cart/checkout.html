@@ -18,7 +18,6 @@ Checkout
 	#total {
 		background: lightgray;
 		font-size: 24px;
-
 	}
 
 	#message_total {
@@ -45,76 +44,84 @@ Checkout
 			</ol>
 		</div><!--/breadcrums-->
 
-		<div class="shopper-informations">
-			<div class="row">
+		{% if success %}
+		<div class="alert alert-success text-center">
+			<h3>Thanh toán thành công!</h3>
+			<p>Cảm ơn bạn đã mua sắm. Đơn hàng của bạn đã được xử lý.</p>
+			<a href="{% url 'index' %}" class="btn btn-primary">Quay về trang chủ</a>
+		</div>
+		{% else %}
+			{% if message %}
+			<div class="alert alert-danger text-center">
+				{{ message }}
+			</div>
+			{% endif %}
 
-				<div class="col-sm-12">
-					<div class="form-one">
-						<form method="POST">
-							{% csrf_token %}
-							<input name="phone" type="text" placeholder="Số điện thoại">
-							<input name="address" type="text" placeholder="Địa chỉ">
-							<button class="btn btn-default btn-block btn-large get" type="submit">Gửi</button>
-						</form>
+			<div class="shopper-informations">
+				<div class="row">
+					<div class="col-sm-12">
+						<div class="form-one">
+							<form method="POST">
+								{% csrf_token %}
+								<input name="phone" type="text" placeholder="Số điện thoại" value="{{ request.POST.phone|default_if_none:'' }}">
+								<input name="address" type="text" placeholder="Địa chỉ" value="{{ request.POST.address|default_if_none:'' }}">
+								<button class="btn btn-default btn-block btn-large get" type="submit">Gửi</button>
+							</form>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
 
-		<div class="review-payment">
-			<h2>Thanh toán</h2>
-		</div>
+			<div class="review-payment">
+				<h2>Thanh toán</h2>
+			</div>
 
-		<div class="table-responsive cart_info">
-			<table class="table table-condensed">
-				<thead>
-					<tr class="cart_menu">
-						<td class="image">Sản phẩm</td>
-						<td class="description"></td>
-						<td class="price">Giá</td>
-						<td class="quantity">Số lượng</td>
-						<td class="total" style="text-align: center;">Tổng</td>
-					</tr>
-				</thead>
-				<tbody>
-					{% for orderdetail in data_orderdetail %}
-					<tr>
-						<td class="cart_product">
-							<a href="{% url 'view_product' product_id=orderdetail.product.id %}">
-								{% if orderdetail.product.image|first in 'image' %}
-								<img src="{% static orderdetail.product.image %}" alt="" style="width: 100px" />
-								{% else %}
-								<img src="{{orderdetail.product.image}}" alt="" style="width: 100px" />
-								{% endif %}
-							</a>
-						</td>
-						<td class="cart_description">
-							<h4><a href="">{{orderdetail.product.name}}</a></h4>
-							<p>Web ID: 1089772{{orderdetail.product.id}}</p>
-						</td>
-						<td class="cart_price">
-							<p>{{orderdetail.product.id|get_price|intcomma}} VND</p>
-						</td>
-						<td class="cart_quantity">
-							<div class="cart_quantity_button">
-								<span>
-									{{orderdetail.quantity}}
-								</span>
-							</div>
-						</td>
-
-						<td class="cart_total" style="text-align: right;">
-							<p class="cart_total_price">{{orderdetail.amount|intcomma}} VND</p>
-						</td>
-
-					</tr>
-					{% endfor %}
-				</tbody>
-			</table>
-		</div>
+			<div class="table-responsive cart_info">
+				<table class="table table-condensed">
+					<thead>
+						<tr class="cart_menu">
+							<td class="image">Sản phẩm</td>
+							<td class="description"></td>
+							<td class="price">Giá</td>
+							<td class="quantity">Số lượng</td>
+							<td class="total" style="text-align: center;">Tổng</td>
+						</tr>
+					</thead>
+					<tbody>
+						{% for orderdetail in data_orderdetail %}
+						<tr>
+							<td class="cart_product">
+								<a href="{% url 'view_product' product_id=orderdetail.product.id %}">
+									{% if orderdetail.product.image|first in 'image' %}
+									<img src="{% static orderdetail.product.image %}" alt="" style="width: 100px" />
+									{% else %}
+									<img src="{{orderdetail.product.image}}" alt="" style="width: 100px" />
+									{% endif %}
+								</a>
+							</td>
+							<td class="cart_description">
+								<h4><a href="">{{orderdetail.product.name}}</a></h4>
+								<p>Web ID: 1089772{{orderdetail.product.id}}</p>
+							</td>
+							<td class="cart_price">
+								<p>{{orderdetail.product.id|get_price|intcomma}} VND</p>
+							</td>
+							<td class="cart_quantity">
+								<div class="cart_quantity_button">
+									<span>
+										{{orderdetail.quantity}}
+									</span>
+								</div>
+							</td>
+							<td class="cart_total" style="text-align: right;">
+								<p class="cart_total_price">{{orderdetail.amount|intcomma}} VND</p>
+							</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		{% endif %}
 	</div>
 </section>
-
-
-
 {% endblock content %}

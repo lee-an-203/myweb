@@ -204,7 +204,8 @@
 								<form action="" method="POST">
 									{% csrf_token %}
 									<label>Số lượng:</label>
-									<input type="text" value="1" name="product_quantity"/>
+									<!-- <input type="text" value="1" name="product_quantity"/> -->
+									<input type="number" id="product_quantity" name="product_quantity" value="1" min="1" max="{{ product_data.stock_quantity }}" required>
 									<a data-href="{% url 'add_product_to_cart' product_id=product_data.id %}" class="btn btn-fefault cart" data-logged-user="{{ user.is_authenticated }}">
 										<i class="fa fa-shopping-cart"></i> Thêm giỏ hàng
 									</a>
@@ -295,9 +296,12 @@
 						  {% endif %}
 						  
 						</div>
+
 						
 					</div>
 				</div><!--/category-tab-->
+
+				
 
 				<div id="alert-add-product">
 					<h1  style="font-size: 300%; margin: auto; text-align: center" >

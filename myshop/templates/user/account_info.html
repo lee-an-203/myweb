@@ -1,58 +1,57 @@
 <style>
-    /* style.css */
+  /* style.css */
 
-.account-container {
-  max-width: 800px;
-  margin: 50px auto;
-  padding: 30px;
-  background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
+  .account-container {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
 
-.account-header {
-  font-size: 28px;
-  font-weight: bold;
-  margin-bottom: 25px;
-  color: #333;
-  text-align: center;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 10px;
-}
+  .account-header {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 25px;
+    color: #333;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+  }
 
-.account-info {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  row-gap: 15px;
-  column-gap: 20px;
-}
+  .account-info {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    row-gap: 15px;
+    column-gap: 20px;
+  }
 
-.account-info label {
-  font-weight: 600;
-  color: #555;
-}
+  .account-info label {
+    font-weight: 600;
+    color: #555;
+  }
 
-.account-info div {
-  color: #222;
-}
+  .account-info div {
+    color: #222;
+  }
 
-.edit-btn {
-  display: inline-block;
-  margin-top: 25px;
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: #fff;
-  text-decoration: none;
-  border-radius: 8px;
-  text-align: center;
-  transition: background-color 0.3s ease;
-}
+  .edit-btn {
+    display: inline-block;
+    margin-top: 25px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 8px;
+    text-align: center;
+    transition: background-color 0.3s ease;
+  }
 
-.edit-btn:hover {
-  background-color: #0056b3;
-}
-
+  .edit-btn:hover {
+    background-color: #0056b3;
+  }
 </style>
 
 
@@ -63,14 +62,70 @@
 <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
 <div class="account-container">
-  <div class="account-header">Thông tin tài khoản</div>
+    <div class="account-header">Thông tin tài khoản</div>
 
-  <div class="account-info">
-    <label>Họ và tên:</label><div>{{ user.first_name }} {{ user.last_name }}</div>
-    <label>Email:</label><div>{{ user.email }}</div>
-    <label>Tên đăng nhập:</label><div>{{ user.username }}</div>
-    <label>Ngày tham gia:</label><div>{{ user.date_joined|date:"d/m/Y" }}</div>
-  </div>
+    <div class="account-info" id="account-display">
+        <label>Họ:</label>
+        <div>{{ user.first_name }}</div>
+        <label>Tên:</label>
+        <div>{{ user.last_name }}</div>
+        <label>Email:</label>
+        <div>{{ user.email }}</div>
+        <label>Tên đăng nhập:</label>
+        <div>{{ user.username }}</div>
+        <label>Ngày tham gia:</label>
+        <div>{{ user.date_joined|date:"d/m/Y" }}</div>
+        <label>Ảnh đại diện:</label>
+        <div>
+            {% if user.profile.avatar %}
+            <img src="{{ user.profile.avatar.url }}" alt="Avatar" width="100">
+            {% else %}
+            <p>Không có ảnh đại diện</p>
+            {% endif %}
+        </div>
+        <a href="#" id="edit-btn" class="edit-btn">Sửa thông tin tài khoản</a>
+    </div>
 
+    <div id="edit-form" style="display:none;">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% if user_form.errors or avatar_form.errors %}
+            <div class="error-messages">
+                {{ user_form.errors }}
+                {{ avatar_form.errors }}
+            </div>
+            {% endif %}
+            <div class="account-info">
+                <label for="id_first_name">Họ:</label>
+                <div>{{ user_form.first_name }}</div>
+                <label for="id_last_name">Tên:</label>
+                <div>{{ user_form.last_name }}</div>
+                <label for="id_email">Email:</label>
+                <div>{{ user_form.email }}</div>
+                <label for="id_avatar">Ảnh đại diện:</label>
+                <div>{{ avatar_form.avatar }}</div>
+            </div>
+            <button type="submit" class="edit-btn">Lưu thay đổi</button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const editBtn = document.getElementById("edit-btn");
+            const accountDisplay = document.getElementById("account-display");
+            const editForm = document.getElementById("edit-form");
+
+            // {% if user_form.errors or avatar_form.errors %}
+            // accountDisplay.style.display = "none";
+            // editForm.style.display = "block";
+            // {% endif %}
+
+            editBtn.addEventListener("click", function (e) {
+                e.preventDefault();
+                accountDisplay.style.display = "none";
+                editForm.style.display = "block";
+            });
+        });
+    </script>
 </div>
 {% endblock %}

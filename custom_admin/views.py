@@ -12,6 +12,7 @@ from myshop.models import (
     Promotion,
     Rating,
     Product,
+    User,
 )
 from .forms import (
     BrandForm,
@@ -22,12 +23,13 @@ from .forms import (
     OrderDetailForm,
     PromotionForm,
     RatingForm,
+    UserForm,
 )
 from django.contrib.auth.models import User
 from django.db.models import Q
 
 from django.utils.timezone import now
-from datetime import date
+from datetime import date, datetime
 from django.db.models import Count
 
 from django.db.models.functions import TruncMonth
@@ -72,78 +74,94 @@ def admin_logout(request):
 @user_passes_test(is_admin)
 def admin_dashboard(request):
     today = date.today()
+    start_date = request.POST.get("start_date") or today.strftime("%Y-%m-%d")
+    end_date = request.POST.get("end_date") or today.strftime("%Y-%m-%d")
+    product_query = request.POST.get("product_query", "").strip()
 
-    # Thống kê tổng
-    total_users = User.objects.count()
-    total_orders = Order.objects.count()
-    total_revenue = (
-        Order.objects.aggregate(Sum("total_amount"))["total_amount__sum"] or 0
-    )
+    try:
+        start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
+        end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
+    except ValueError:
+        start_date = end_date = today
 
-    # Thống kê doanh thu theo ngày, tháng, năm (xử lý chuẩn theo kiểu DateField / DateTimeField)
+    # Đảm bảo start_date <= end_date
+    if start_date > end_date:
+        start_date, end_date = end_date, start_date
+
+    # Lọc theo khoảng thời gian
+    orders_filtered = Order.objects.filter(create_date__range=[start_date, end_date])
+
+    # Lọc theo sản phẩm (nếu có)
+    if product_query:
+        orders_filtered = orders_filtered.filter(
+            orderdetail__product__name__icontains=product_query
+        ).distinct()
+
+    # Thống kê doanh thu
     revenue_today = (
-        Order.objects.filter(create_date=today).aggregate(Sum("total_amount"))[
+        orders_filtered.filter(create_date=today).aggregate(Sum("total_amount"))[
             "total_amount__sum"
         ]
         or 0
     )
     revenue_month = (
-        Order.objects.filter(
+        orders_filtered.filter(
             create_date__year=today.year, create_date__month=today.month
         ).aggregate(Sum("total_amount"))["total_amount__sum"]
         or 0
     )
     revenue_year = (
-        Order.objects.filter(create_date__year=today.year).aggregate(
+        orders_filtered.filter(create_date__year=today.year).aggregate(
             Sum("total_amount")
         )["total_amount__sum"]
         or 0
     )
 
     # Số lượng đơn hàng
-    orders_today = Order.objects.filter(create_date=today).count()
-    orders_month = Order.objects.filter(
+    orders_today = orders_filtered.filter(create_date=today).count()
+    orders_month = orders_filtered.filter(
         create_date__year=today.year, create_date__month=today.month
     ).count()
-    orders_year = Order.objects.filter(create_date__year=today.year).count()
-
-    # Người dùng mới trong tháng
-    new_users = User.objects.filter(
-        date_joined__year=today.year, date_joined__month=today.month
-    ).count()
+    orders_year = orders_filtered.filter(create_date__year=today.year).count()
 
     # Top sản phẩm bán chạy
+    top_products_query = (
+        OrderDetail.objects.filter(order__create_date__range=[start_date, end_date])
+    )
+    if product_query:
+        top_products_query = top_products_query.filter(
+            product__name__icontains=product_query
+        )
     top_products = (
-        OrderDetail.objects.values("product__name")
+        top_products_query.values("product__name")
         .annotate(total_sold=Sum("quantity"))
         .order_by("-total_sold")[:5]
     )
 
-    # Doanh thu theo tháng (vẽ biểu đồ)
+    # Doanh thu theo tháng
     revenue_by_month = (
-        Order.objects.annotate(month=TruncMonth("create_date"))
+        Order.objects.filter(create_date__range=[start_date, end_date])
+        .annotate(month=TruncMonth("create_date"))
         .values("month")
         .annotate(total=Sum("total_amount"))
         .order_by("month")
     )
-
     chart_labels = [entry["month"].strftime("%m/%Y") for entry in revenue_by_month]
-    chart_data = [entry["total"] for entry in revenue_by_month]
+    chart_data = [entry["total"] or 0 for entry in revenue_by_month]
 
     context = {
-        "total_users": total_users,
-        "total_orders": total_orders,
-        "total_revenue": total_revenue,
         "revenue_today": revenue_today,
         "revenue_month": revenue_month,
         "revenue_year": revenue_year,
         "orders_today": orders_today,
         "orders_month": orders_month,
         "orders_year": orders_year,
-        "new_users": new_users,
         "top_products": top_products,
         "chart_labels": json.dumps(chart_labels),
         "chart_data": json.dumps(chart_data),
+        "start_date": start_date.strftime("%Y-%m-%d"),
+        "end_date": end_date.strftime("%Y-%m-%d"),
+        "product_query": product_query,
     }
 
     return render(request, "custom_admin/admin_dashboard.html", context)
@@ -168,7 +186,7 @@ def brand_add(request):
     else:
         form = BrandForm()
     return render(
-        request, "custom_admin/brand_form.html", {"form": form, "title": "Thêm Brand"}
+        request, "custom_admin/brand_form.html", {"form": form, "title": "Thêm thương hiệu"}
     )
 
 
@@ -186,7 +204,7 @@ def brand_edit(request, pk):
     return render(
         request,
         "custom_admin/brand_form.html",
-        {"form": form, "title": "Chỉnh sửa Brand"},
+        {"form": form, "title": "Chỉnh sửa thương hiệu"},
     )
 
 
@@ -221,7 +239,7 @@ def category_add(request):
     return render(
         request,
         "custom_admin/category_form.html",
-        {"form": form, "title": "Thêm Category"},
+        {"form": form, "title": "Thêm Danh mục"},
     )
 
 
@@ -239,7 +257,7 @@ def category_edit(request, pk):
     return render(
         request,
         "custom_admin/category_form.html",
-        {"form": form, "title": "Chỉnh sửa Category"},
+        {"form": form, "title": "Chỉnh sửa Danh mục"},
     )
 
 
@@ -342,7 +360,7 @@ def detail_add(request):
     return render(
         request,
         "custom_admin/detail_form.html",
-        {"form": form, "title": "Thêm cấu hình sản phẩm"},
+        {"form": form, "title": "Thêm chi tiết sản phẩm"},
     )
 
 
@@ -360,7 +378,7 @@ def detail_edit(request, pk):
     return render(
         request,
         "custom_admin/detail_form.html",
-        {"form": form, "title": "Chỉnh sửa cấu hình sản phẩm"},
+        {"form": form, "title": "Chỉnh sửa chi tiết sản phẩm"},
     )
 
 
@@ -383,13 +401,41 @@ def order_list(request):
 @user_passes_test(is_admin)
 def order_list(request):
     search_query = request.GET.get("search", "")
+    status_filter = request.GET.get("status", "")
+    
     orders = Order.objects.all()
+    
+    # Áp dụng bộ lọc tìm kiếm theo số điện thoại
     if search_query:
         orders = orders.filter(Q(phone__icontains=search_query))
+    
+    # Áp dụng bộ lọc trạng thái
+    if status_filter != "":
+        try:
+            status_filter = int(status_filter)
+            if status_filter in [0, 1, 2, 3]:
+                orders = orders.filter(status=status_filter)
+        except ValueError:
+            pass  # Bỏ qua nếu status không hợp lệ
+    
     return render(
         request,
         "custom_admin/order_list.html",
-        {"orders": orders, "search_query": search_query},
+        {
+            "orders": orders,
+            "search_query": search_query,
+            "status_filter": status_filter
+        },
+    )
+
+@login_required
+@user_passes_test(is_admin)
+def order_detail(request, pk):
+    order = get_object_or_404(Order, pk=pk)
+    return render(
+        request,
+        "custom_admin/order_detail.html",
+        {"order": order},
     )
 
 
@@ -400,8 +446,12 @@ def order_edit(request, pk):
     if request.method == "POST":
         form = OrderForm(request.POST, instance=order)
         if form.is_valid():
-            form.save()
-            return redirect("custom_admin:order_list")
+            new_status = int(form.cleaned_data['status'])
+            if new_status != order.status and new_status != order.status + 1:
+                form.add_error('status', 'Chỉ có thể chuyển sang trạng thái tiếp theo.')
+            else:
+                form.save()
+                return redirect("custom_admin:order_list")
     else:
         form = OrderForm(instance=order)
     return render(
@@ -418,6 +468,37 @@ def order_delete(request, pk):
     order.delete()
     return redirect("custom_admin:order_list")
 
+from django.http import JsonResponse
+@login_required
+@user_passes_test(is_admin)
+def order_update_status(request):
+    if request.method == 'POST':
+        order_id = request.POST.get('order_id')
+        new_status = request.POST.get('status')
+
+        try:
+            order = Order.objects.get(pk=order_id)
+            new_status = int(new_status)
+
+            # Kiểm tra trạng thái hợp lệ
+            if new_status < 0 or new_status > 3:
+                return JsonResponse({'success': False, 'error': 'Trạng thái không hợp lệ'})
+            
+            # Chỉ cho phép chuyển sang trạng thái tiếp theo
+            if new_status != order.status + 1:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Không thể chuyển về trạng thái trước hoặc nhảy cách trạng thái'
+                })
+
+            order.status = new_status
+            order.save()
+            return JsonResponse({'success': True})
+        except Order.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Đơn hàng không tồn tại'})
+        except ValueError:
+            return JsonResponse({'success': False, 'error': 'Trạng thái không hợp lệ'})
+    return JsonResponse({'success': False, 'error': 'Yêu cầu không hợp lệ'})
 
 @login_required
 @user_passes_test(is_admin)
@@ -613,5 +694,32 @@ def dashboard(request):
     }
     return render(request, "custom_admin/admin_dashboard.html", context)
 
+# custom_admin/views.py (bổ sung thêm)
+
+@login_required
+@user_passes_test(is_admin)
+def user_list(request):
+    users = User.objects.all()
+    return render(request, 'custom_admin/user_list.html', {'users': users})
 
 
+@login_required
+@user_passes_test(is_admin)
+def user_edit(request, pk):
+    user = get_object_or_404(User, pk=pk)
+    if request.method == 'POST':
+        form = UserForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect('custom_admin:user_list')
+    else:
+        form = UserForm(instance=user)
+    return render(request, 'custom_admin/user_form.html', {'form': form, 'title': 'Chỉnh sửa người dùng'})
+
+
+@login_required
+@user_passes_test(is_admin)
+def user_delete(request, pk):
+    user = get_object_or_404(User, pk=pk)
+    user.delete()
+    return redirect('custom_admin:user_list')

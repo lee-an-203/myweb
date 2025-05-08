@@ -24,25 +24,38 @@ def register_user(request):
 def login_user(request):
     form = LoginForm()
     message = ""
+    
     if request.method == "POST":
         form = LoginForm(request.POST)
         if form.is_valid():
-            # Hàm authenticate('username', 'password')
-            # Xác thực khi username/password cung cấp là đúng -> trả về 1 object/instance từ class User
-            user = authenticate(
-                username = form.cleaned_data['username'],
-                password = form.cleaned_data['password']
-            )
-            if user:
-                # Xác thực thành công
-                print('Bạn đã xác thực thành công') # Mới xác thực
-                # Chưa có đăng nhập
-                login(request=request, user=user) # Login/giữ trạng thái đăng nhập thành công
-                if request.GET.get('next'):
-                    return HttpResponseRedirect(request.GET['next'])
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            
+            # Xác thực người dùng
+            user = authenticate(username=username, password=password)
+            
+            if user is not None:
+                # Đăng nhập thành công
+                login(request=request, user=user)
+                print('Bạn đã xác thực thành công')
+                
+                # Kiểm tra nếu có tham số 'next' trong URL
+                next_url = request.GET.get('next')
+                if next_url:
+                    return HttpResponseRedirect(next_url)
+                
+                # Nếu không có 'next', chuyển hướng về trang chính
                 return redirect('index')
             else:
-                message = 'Vui lòng kiểm tra lại Username/Password'
+                # Xác thực thất bại
+                message = "Tên đăng nhập hoặc mật khẩu không đúng."
+        else:
+            # Form không hợp lệ
+            message = "Vui lòng nhập tài khoản, mật khẩu."
+    else:
+        # GET request: hiển thị form đăng nhập
+        message = ""
+
     return render(
         request=request,
         template_name='user/login.html',
@@ -58,7 +71,7 @@ def validate_username(request):
         username = request.POST['username']
         try:
             User.objects.get(username=username)
-            return JsonResponse({'message': f'{username} đã trùng'}, status=409) # 409 Conflict
+            return JsonResponse({'message': f'{username} đã tồn tại'}, status=409)
         except User.DoesNotExist:
-            return JsonResponse({'message': 'OK'}, status=200)
+            return JsonResponse({'message': 'Tên người dùng hợp lệ'}, status=200)
 

@@ -18,129 +18,19 @@
 	<link href="{% static 'css/animate.css' %}" rel="stylesheet">
 	<link href="{% static 'css/main.css' %}" rel="stylesheet">
 	<link href="{% static 'css/responsive.css' %}" rel="stylesheet">
+	<link href="{% static 'css/base.css' %}" rel="stylesheet">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+	<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script> -->
 	<link rel="shortcut icon" href="{% static 'images/ico/favicon.ico' %}">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
 
 
+
 </head><!--/head-->
-
-<style>
-	.product {
-		border-style: none;
-
-
-	}
-
-	#alert-add-product {
-		background-color: lightgray;
-		color: orange;
-		width: 500px;
-		position: fixed;
-		z-index: 1000;
-		top: 30%;
-		left: 35%;
-		display: none;
-	}
-
-	.pricing {
-		border: 2px;
-		padding: 15px;
-		background-color: orange;
-		color: white;
-		height: 100px;
-		width: 100px;
-		border-radius: 50%;
-	}
-
-	#main div {
-		border: 1px solid black;
-		display: flex;
-		align-items: center;
-	}
-
-	.header-row {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 20px;
-		padding: 10px 0;
-	}
-
-	.logo img {
-		height: 80px;
-		width: auto;
-	}
-
-	.search-box {
-		flex-grow: 1;
-		display: flex;
-		justify-content: center;
-	}
-
-	.search-form {
-		display: flex;
-		border: 1px solid #ccc;
-		border-radius: 20px;
-		overflow: hidden;
-		max-width: 350px;
-		width: 100%;
-	}
-
-	.search-form input[type="text"] {
-		border: none;
-		padding: 10px 15px;
-		flex-grow: 1;
-		outline: none;
-		font-size: 14px;
-	}
-
-	.search-form button {
-		background-color: #fe980f;
-		border: none;
-		padding: 0 15px;
-		color: white;
-		cursor: pointer;
-		font-size: 16px;
-	}
-
-	.shop-menu ul {
-		display: flex;
-		gap: 15px;
-		align-items: center;
-		list-style: none;
-		margin: 0;
-		padding: 0;
-	}
-
-	.shop-menu li a {
-		color: #333;
-		font-weight: bold;
-		text-decoration: none;
-	}
-
-	.shop-menu li a:hover {
-		color: #fe980f;
-	}
-
-	html,
-	body {
-		height: 100%;
-		margin: 0;
-	}
-
-	.wrapper {
-		display: flex;
-		flex-direction: column;
-		min-height: 100vh;
-	}
-
-	footer {
-		margin-top: auto;
-		/* Đẩy footer xuống dưới cùng */
-	}
-</style>
 
 <body>
 
@@ -175,6 +65,12 @@
 									</a>
 								</li>
 
+								<li>
+									<a href="{% url 'order_list' %}">
+										<i class="fa fa-list"></i> Đơn hàng của tôi
+									</a>
+								</li>
+
 								{% if user.is_staff %}
 								<li>
 									<a href="{% url 'custom_admin:dashboard' %}">
@@ -182,6 +78,8 @@
 									</a>
 								</li>
 								{% endif %}
+
+
 
 								<li>
 									<a href="{% url 'logout_user' %}">
@@ -208,6 +106,24 @@
 				</div>
 			</div>
 		</header>
+
+		{% if request.resolver_match.url_name == 'index' %}
+		<div id="product-banner" class="carousel">
+			<!-- Carousel items -->
+			<div class="carousel-inner">
+				<div class="carousel-item active">
+					<img src="https://insieutoc.vn/wp-content/uploads/2021/02/mau-banner-quang-cao-khuyen-mai.jpg"
+						alt="Banner 1">
+				</div>
+				<div class="carousel-item">
+					<img src="{% static 'images/home/baner2.png' %}" alt="Banner 2">
+				</div>
+				<div class="carousel-item">
+					<img src="{% static 'images/home/baner3.png' %}" alt="Banner 3">
+				</div>
+			</div>
+		</div>
+		{% endif %}
 
 
 		{% block content %}
@@ -261,8 +177,7 @@
 								<h2>Giới thiệu</h2>
 								<form action="#" class="searchform">
 									<input type="text" placeholder="Địa chỉ email của bạn" />
-									<button type="submit" class="btn btn-default"><i
-											class="fa fa-arrow-circle-o-right">Gửi</i></button>
+									<button type="submit" class="btn btn-default"><i class="fa">Gửi</i></button>
 									<p>Nhận thông tin cập nhật mới nhất từ ​​<br />trang web của chúng tôi và tự cập
 										nhật...
 									</p>
@@ -276,127 +191,11 @@
 
 			<!-- Chatbot Nhúng -->
 			<!-- 🌐 Chatbot Tiếng Việt -->
-			<style>
-				#chatbot-button {
-					position: fixed;
-					bottom: 20px;
-					right: 20px;
-					background-color: #0066ff;
-					color: white;
-					border: none;
-					border-radius: 50%;
-					width: 60px;
-					height: 60px;
-					font-size: 28px;
-					cursor: pointer;
-					box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-					z-index: 9999;
-				}
-
-				#chatbot-box {
-					display: none;
-					position: fixed;
-					bottom: 90px;
-					right: 20px;
-					width: 360px;
-					height: 500px;
-					background: white;
-					border: 1px solid #ccc;
-					border-radius: 16px;
-					box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-					z-index: 9999;
-					display: flex;
-					flex-direction: column;
-				}
-
-				#chatbot-box.expanded {
-					width: 90vw !important;
-					height: 90vh !important;
-					bottom: 5vh !important;
-					right: 5vw !important;
-				}
-
-				#chatbot-header {
-					background: #0066ff;
-					color: white;
-					padding: 12px;
-					font-weight: bold;
-					text-align: center;
-					font-size: 16px;
-					position: relative;
-				}
-
-				#chatbot-expand,
-				#chatbot-close {
-					position: absolute;
-					top: 8px;
-					background: transparent;
-					border: none;
-					color: white;
-					font-size: 18px;
-					cursor: pointer;
-				}
-
-				#chatbot-expand {
-					right: 36px;
-				}
-
-				#chatbot-close {
-					right: 8px;
-				}
-
-				#chatbot-messages {
-					padding: 12px;
-					flex: 1;
-					overflow-y: auto;
-					font-size: 14px;
-					background: #f9f9f9;
-				}
-
-				#chatbot-input {
-					display: flex;
-					border-top: 1px solid #ddd;
-				}
-
-				#chatbot-input input {
-					flex: 1;
-					border: none;
-					padding: 12px;
-					font-size: 14px;
-				}
-
-				#chatbot-input button {
-					background: #0066ff;
-					color: white;
-					border: none;
-					padding: 12px 16px;
-					cursor: pointer;
-					font-size: 14px;
-				}
-
-				.chatbot-msg {
-					margin: 6px 0;
-					max-width: 80%;
-					padding: 8px 12px;
-					border-radius: 16px;
-					line-height: 1.4;
-				}
-
-				.user {
-					background: #DCF8C6;
-					align-self: flex-end;
-					text-align: right;
-				}
-
-				.bot {
-					background: #e6ecff;
-					align-self: flex-start;
-					text-align: left;
-				}
-			</style>
+			<!-- <style>
+			</style> -->
 
 			<!-- Chatbox -->
-			<div id="chatbot-box">
+			<!-- <div id="chatbot-box">
 				<div id="chatbot-header">
 					🤖 Trợ lý ảo
 					<button id="chatbot-expand" onclick="toggleExpand()">⛶</button>
@@ -409,13 +208,13 @@
 					<input type="text" id="chatbot-text" placeholder="Nhập câu hỏi..." />
 					<button onclick="sendChat()">Gửi</button>
 				</div>
-			</div>
+			</div> -->
 
 			<!-- Nút tròn mở chat -->
-			<button id="chatbot-button" onclick="toggleChat(true)">💬</button>
+			<!-- <button id="chatbot-button" onclick="toggleChat(true)">💬</button> -->
 
 			<!-- Script -->
-			<script>
+			<!-- <script>
 				function toggleChat(open) {
 					const box = document.getElementById("chatbot-box");
 					const btn = document.getElementById("chatbot-button");
@@ -456,74 +255,11 @@
 					return "Tôi chưa hiểu rõ. Bạn có thể hỏi lại cụ thể hơn không?";
 				}
 
-			</script>
-			{% if request.path == '/' %}
+			</script> -->
+			<!-- {% if request.path == '/' %} -->
 			<!-- 🎉 Popup Khuyến Mãi -->
 			<!-- 🎉 Popup Khuyến Mãi Có Hình -->
-			<style>
-				#promo-popup {
-					display: none;
-					position: fixed;
-					top: 0;
-					left: 0;
-					width: 100vw;
-					height: 100vh;
-					background: rgba(0, 0, 0, 0.5);
-					z-index: 10000;
-					justify-content: center;
-					align-items: center;
-				}
 
-				#promo-content {
-					background: white;
-					padding: 20px;
-					border-radius: 16px;
-					max-width: 400px;
-					text-align: center;
-					box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-					position: relative;
-					animation: popupFadeIn 0.5s ease;
-				}
-
-				#promo-content img {
-					width: 100%;
-					border-radius: 12px;
-					margin-bottom: 16px;
-				}
-
-				#promo-content h2 {
-					color: #d60000;
-					margin: 10px 0;
-				}
-
-				#promo-content p {
-					font-size: 16px;
-					color: #333;
-				}
-
-				#promo-close {
-					position: absolute;
-					top: 10px;
-					right: 14px;
-					background: none;
-					border: none;
-					font-size: 22px;
-					color: #999;
-					cursor: pointer;
-				}
-
-				@keyframes popupFadeIn {
-					from {
-						transform: scale(0.9);
-						opacity: 0;
-					}
-
-					to {
-						transform: scale(1);
-						opacity: 1;
-					}
-				}
-			</style>
 
 			<div id="promo-popup">
 				<div id="promo-content">
@@ -540,17 +276,27 @@
 				function showPromo() {
 					document.getElementById("promo-popup").style.display = "flex";
 				}
+
 				function closePromo() {
 					document.getElementById("promo-popup").style.display = "none";
 				}
+
 				window.addEventListener("load", () => {
-					setTimeout(showPromo, 1000); // sau 1s hiện popup
+					// Kiểm tra nếu chưa hiển thị popup lần nào
+					if (!sessionStorage.getItem("promoShown")) {
+						setTimeout(() => {
+							showPromo();
+							// Đánh dấu là đã hiện popup
+							sessionStorage.setItem("promoShown", "true");
+						}, 1000); // sau 1s hiện popup
+					}
 				});
 			</script>
+
 			{% endif %}
 
 
-		</footer><!--/Footer-->
+		</footer>
 
 		<script src="{% static 'js/jquery.js' %}"></script>
 		<script src="{% static 'js/bootstrap.min.js' %}"></script>
@@ -586,6 +332,45 @@
 					});
 				});
 			});
+		</script>
+
+		<script>
+			let currentIndex = 0;
+			const items = document.querySelectorAll('.carousel-item');
+			const indicators = document.querySelectorAll('.indicator');
+			const totalItems = items.length;
+
+			function updateCarousel() {
+				items.forEach((item, index) => {
+					item.classList.toggle('active', index === currentIndex);
+				});
+				indicators.forEach((indicator, index) => {
+					indicator.classList.toggle('active', index === currentIndex);
+				});
+			}
+
+			function moveSlide(step) {
+				currentIndex = (currentIndex + step + totalItems) % totalItems;
+				updateCarousel();
+			}
+
+			function goToSlide(index) {
+				currentIndex = index;
+				updateCarousel();
+			}
+
+			// Auto slide every 5 seconds
+			setInterval(() => {
+				moveSlide(1);
+			}, 3000);
+
+			// Event listeners for indicators
+			indicators.forEach((indicator, index) => {
+				indicator.addEventListener('click', () => goToSlide(index));
+			});
+
+			// Initial setup
+			updateCarousel();
 		</script>
 
 	</div>

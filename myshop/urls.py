@@ -26,6 +26,7 @@ urlpatterns = [
     re_path('account/', views.account_info, name='account_info'),
 
 
-
+    path('account_info/', views.account_info, name='account_info'),
+    path('orders/', views.order_list, name='order_list'),
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

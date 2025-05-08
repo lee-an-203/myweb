@@ -6,33 +6,38 @@
 <div style="max-height: 500px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 5px;">
   <table class="table table-bordered table-hover mb-0">
     <thead class="table-light">
-    <tr>
-      <th>ID</th>
-      <th>Đơn hàng</th>
-      <th>Sản phẩm</th>
-      <th>Số lượng</th>
-      <th>Thành tiền</th>
-      <th>Hành động</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for od in order_details %}
-    <tr>
-      <td>{{ od.id }}</td>
-      <td>#{{ od.order.id }}</td>
-      <td>{{ od.product.name }}</td>
-      <td>{{ od.quantity }}</td>
-      <td>{{ od.amount|intcomma }} VND</td>
-      <td>
-        <a href="{% url 'custom_admin:order_detail_edit' od.id %}" class="btn btn-sm btn-warning">Sửa</a>
-        <a href="{% url 'custom_admin:order_detail_delete' od.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Xoá chi tiết này?')">Xoá</a>
-      </td>
-    </tr>
-    {% empty %}
-    <tr><td colspan="6">Không có dữ liệu.</td></tr>
-    {% endfor %}
-  </tbody>
-</table>
+      <tr>
+        <!-- <th>ID</th> -->
+        <th>STT</th>
+        <th>Mã đơn hàng</th>
+        <th>Sản phẩm</th>
+        <th>Số lượng</th>
+        <th>Thành tiền</th>
+        <th>Hành động</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for od in order_details %}
+      <tr>
+        <!-- <td>{{ od.id }}</td> -->
+        <td>{{ forloop.counter }}</td>
+        <td>{{ od.order.id }}</td>
+        <td>{{ od.product.name }}</td>
+        <td>{{ od.quantity }}</td>
+        <td>{{ od.amount|intcomma }} VND</td>
+        <td>
+          <!-- <a href="{% url 'custom_admin:order_detail_edit' od.id %}" class="btn btn-sm btn-warning">Sửa</a> -->
+          <a href="{% url 'custom_admin:order_detail_delete' od.id %}" class="btn btn-sm btn-danger"
+            onclick="return confirm('Xoá chi tiết này?')">Xoá</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="6">Không có dữ liệu.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
 
 

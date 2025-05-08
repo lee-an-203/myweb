@@ -1,10 +1,94 @@
 {% extends "base_admin.html" %}
+{% load widget_tweaks %}
 {% block content %}
-<h3>{{ title }}</h3>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-success">Lưu</button>
-    <a href="{% url 'custom_admin:product_list' %}" class="btn btn-secondary">Quay lại</a>
-</form>
+<div class="container py-4">
+    <h3 class="text-primary mb-4">{{ title }}</h3>
+
+    <div class="card shadow-sm rounded-3" style="max-height: 520px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 5px;">
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data" novalidate>
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+
+                <!-- Tên sản phẩm -->
+                <div class="mb-3">
+                    <label for="{{ form.name.id_for_label }}" class="form-label fw-bold">Tên sản phẩm</label>
+                    {{ form.name|add_class:"form-control" }}
+                    {% if form.name.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.name.errors.0 }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Danh mục -->
+                <div class="mb-3">
+                    <label for="{{ form.category.id_for_label }}" class="form-label fw-bold">Danh mục</label>
+                    {{ form.category|add_class:"form-control" }}
+                </div>
+
+                <!-- Thương hiệu -->
+                <div class="mb-3">
+                    <label for="{{ form.brand.id_for_label }}" class="form-label fw-bold">Thương hiệu</label>
+                    {{ form.brand|add_class:"form-control" }}
+                </div>
+
+                <!-- Giá -->
+                <div class="mb-3">
+                    <label for="{{ form.price.id_for_label }}" class="form-label fw-bold">Giá</label>
+                    {{ form.price|add_class:"form-control" }}
+                </div>
+
+                <!-- Số lượng tồn -->
+                <div class="mb-3">
+                    <label for="{{ form.stock_quantity.id_for_label }}" class="form-label fw-bold">Số lượng sản
+                        phẩm</label>
+                    {{ form.stock_quantity|add_class:"form-control" }}
+                </div>
+
+                <!-- Chi tiết -->
+                <div class="mb-3">
+                    <label for="{{ form.detail.id_for_label }}" class="form-label fw-bold">Chi tiết kỹ thuật</label>
+                    {{ form.detail|add_class:"form-control" }}
+                </div>
+
+                <!-- Ảnh -->
+                <div class="mb-3">
+                    <label for="{{ form.image.id_for_label }}" class="form-label fw-bold">Hình ảnh</label>
+                    {{ form.image|add_class:"form-control" }}
+                </div>
+
+                <!-- Trạng thái -->
+                <!-- <div class="mb-3">
+                    <label class="form-label fw-bold">Trạng thái</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="status" id="con_ban" value="con_ban" {% if form.status.value == 'con_ban' %}checked{% endif %}>
+                        <label class="form-check-label" for="con_ban">
+                            Còn bán
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="status" id="dung_ban" value="dung_ban" {% if form.status.value == 'dung_ban' %}checked{% endif %}>
+                        <label class="form-check-label" for="dung_ban">
+                            Dừng bán
+                        </label>
+                    </div>
+                </div> -->
+                
+
+                <!-- Thẻ -->
+                <div class="mb-3">
+                    <label for="{{ form.tags.id_for_label }}" class="form-label fw-bold">Thẻ</label>
+                    {{ form.tags }}
+                </div>
+
+                <!-- Nút -->
+                <div class="d-flex justify-content-between">
+                    <button type="submit" class="btn btn-success px-4">💾 Lưu</button>
+                    <a href="{% url 'custom_admin:product_list' %}" class="btn btn-secondary px-4">↩ Quay lại</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}

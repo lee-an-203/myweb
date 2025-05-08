@@ -1,0 +1,32 @@
+<!-- account_list.html -->
+{% extends "base_admin.html" %}
+{% block content %}
+<h3>Danh sách tài khoản</h3>
+
+<a href="{% url 'custom_admin:account_add' %}" class="btn btn-primary mb-3">+ Thêm tài khoản</a>
+
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Tên người dùng</th>
+      <th>Email</th>
+      <th>Avatar</th>
+      <th>Hành động</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for user in users %}
+    <tr>
+      <td>{{ user.id }}</td>
+      <td>{{ user.username }}</td>
+      <td>{{ user.email }}</td>
+      <td><img src="{{ user.profile.avatar.url }}" alt="{{ user.username }}" style="width: 50px; height: auto;"></td>
+      <td>
+        <a href="{% url 'custom_admin:account_edit' user.id %}" class="btn btn-sm btn-warning">Sửa</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

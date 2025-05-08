@@ -14,6 +14,7 @@ from django.utils.timezone import now
 from django.contrib.humanize.templatetags.humanize import intcomma
 from django.contrib.auth import logout
 from django.shortcuts import redirect
+from .models import Profile
 
 
 from django.contrib.auth.models import User
@@ -21,7 +22,7 @@ from .models import Order, Product
 from django.db.models import Sum, Count
 from django.db.models import Q
 from django.core.paginator import Paginator
-
+from .forms import UserUpdateForm, AvatarUpdateForm
 
 
 from django.contrib.auth.decorators import login_required
@@ -48,61 +49,60 @@ from django.db.models import Sum
 import json
 
 
+# @login_required
+# def edit_account(request):
+#     if request.method == "POST":
+#         user_form = UserUpdateForm(request.POST, instance=request.user)
+#         avatar_form = AvatarUpdateForm(
+#             request.POST, request.FILES, instance=request.user.profile
+#         )
+
+#         if user_form.is_valid() and avatar_form.is_valid():
+#             user_form.save()
+#             avatar_form.save()
+#             messages.success(request, "Thông tin tài khoản đã được cập nhật.")
+#             return redirect("account_info")  # Redirect to account info page
+
+#     else:
+#         user_form = UserUpdateForm(instance=request.user)
+#         avatar_form = AvatarUpdateForm(instance=request.user.profile)
+
+#     context = {
+#         "user_form": user_form,
+#         "avatar_form": avatar_form,
+#     }
+
+#     return render(request, "user/edit_account.html", context)
+
+
 @login_required
-def edit_account(request):
+def account_info(request):
+    # Tạo Profile nếu chưa có
+    if not hasattr(request.user, "profile"):
+        Profile.objects.create(user=request.user)
+
     if request.method == "POST":
         user_form = UserUpdateForm(request.POST, instance=request.user)
         avatar_form = AvatarUpdateForm(
             request.POST, request.FILES, instance=request.user.profile
         )
-        password_form = CustomPasswordChangeForm(user=request.user, data=request.POST)
-
-        if user is not None:
-            login_required(request, user)
-            if user.is_staff:
-                return redirect("custom_admin:dashboard")  # Trang quản trị admin
-            else:
-                return redirect("account_info")  # Trang người dùng
-        else:
-            messages.error(request, "Sai tài khoản hoặc mật khẩu.")
-
-    #     if 'update_info' in request.POST:
-    #         if user_form.is_valid() and avatar_form.is_valid():
-    #             user_form.save()
-    #             avatar_form.save()
-    #             return redirect('account_info')
-
-    #     elif 'change_password' in request.POST:
-    #         if password_form.is_valid():
-    #             user = password_form.save()
-    #             update_session_auth_hash(request, user)
-    #             return redirect('account_info')
-
-    # else:
-    #     user_form = UserUpdateForm(instance=request.user)
-    #     avatar_form = AvatarUpdateForm(instance=request.user.profile)
-    #     password_form = CustomPasswordChangeForm(user=request.user)
-
-    context = {
-        "user_form": user_form,
-        "avatar_form": avatar_form,
-        "password_form": password_form,
-    }
-    return render(request, "myshop/edit_account.html", context)
-
-
-@login_required(login_url="/user/login")
-def account_info(request):
-    if request.method == "POST":
-        form = UserUpdateForm(request.POST, instance=request.user)
-        if form.is_valid():
-            form.save()
+        if user_form.is_valid() and avatar_form.is_valid():
+            user_form.save()
+            avatar_form.save()
             messages.success(request, "Cập nhật thông tin thành công.")
             return redirect("account_info")
     else:
-        form = UserUpdateForm(instance=request.user)
+        user_form = UserUpdateForm(instance=request.user)
+        avatar_form = AvatarUpdateForm(instance=request.user.profile)
 
-    return render(request, "user/account_info.html", {"form": form})
+    return render(
+        request,
+        "user/account_info.html",
+        {
+            "user_form": user_form,
+            "avatar_form": avatar_form,
+        },
+    )
 
 
 def index(request):
@@ -110,7 +110,7 @@ def index(request):
     brands = Brand.objects.all()
     query = request.GET.get("q", "")
 
-    products = Product.objects.all().order_by('id')
+    products = Product.objects.all().order_by("id")
 
     if query:
         products = products.filter(
@@ -139,7 +139,7 @@ def index(request):
 
     # ❗️Chỉ thêm các phần này nếu không tìm kiếm
     if not query:
-        featured_products = Product.objects.all().order_by('id')
+        featured_products = Product.objects.all().order_by("id")
         featured_paginator = Paginator(featured_products, 9)
         featured_page_number = request.GET.get("featured_page")
         featured_page = featured_paginator.get_page(featured_page_number)
@@ -158,7 +158,6 @@ def index(request):
         context["bestseller_page"] = bestseller_page
 
     return render(request, "index.html", context)
-
 
 
 def brands(request, category_name):  # View list product of a brand
@@ -380,51 +379,75 @@ def show_cart(request):
 
 @login_required(login_url="/user/login")
 def checkout(request):
-    orderdetail = []
     logged_user = request.user
-    order = Order.objects.get(user=logged_user, status=0)
-    orderdetail = order.orderdetail_set.all()
+    message = ""
+    success = False
+
+    try:
+        order = Order.objects.get(user=logged_user, status=0)
+        orderdetail = order.orderdetail_set.all()
+    except Order.DoesNotExist:
+        message = "Không tìm thấy đơn hàng trong giỏ."
+        orderdetail = []
+
     if request.method == "POST":
-        phone = request.POST["phone"]
-        address = request.POST["address"]
-        order.phone = phone
-        order.address = address
-        order.total_amount = sum([item.amount for item in orderdetail])
-        order.status = 1  # Đơn hàng thành công
-        order.save()
-        for od_detail in orderdetail:
-            od_detail.product.stock_quantity -= od_detail.quantity
-            od_detail.product.save()
-        # embed send mail
-        html_template = "cart/message.html"
-        context = {
-            "data_orderdetail": orderdetail,
-            "total_amount": order.total_amount,
-        }
-        html_template = render_to_string(html_template, {"context": context})
+        phone = request.POST.get("phone", "").strip()
+        address = request.POST.get("address", "").strip()
 
+        # Kiểm tra dữ liệu đầu vào
+        if not phone or not address:
+            message = "Vui lòng nhập đầy đủ số điện thoại và địa chỉ."
+        else:
+            # Xử lý lưu đơn hàng
+            order.phone = phone
+            order.address = address
+            order.total_amount = sum([item.amount for item in orderdetail])
+            order.status = 1  # Đơn hàng thành công
+            order.save()
 
-        from_email = settings.EMAIL_HOST_USER
-        subject = "Thanks for your checkout at shop Django"
-        message = f"""
-        Xin chào {logged_user.username},
-        Cảm ơn bạn đã thanh toán.
-        Tổng số tiền: {intcomma(order.total_amount)} VND
+            # Cập nhật số lượng tồn kho
+            for od_detail in orderdetail:
+                od_detail.product.stock_quantity -= od_detail.quantity
+                od_detail.product.save()
 
-        Cảm ơn
-        MOBILE-STORE
-        """
-        recipient_list = [logged_user.email]
-        send_mail(subject, message, from_email, recipient_list)
+            # Gửi email xác nhận
+            html_template = "cart/message.html"
+            context = {
+                "data_orderdetail": orderdetail,
+                "total_amount": order.total_amount,
+            }
+            html_content = render_to_string(html_template, {"context": context})
 
-        return redirect("index")
+            from_email = settings.EMAIL_HOST_USER
+            subject = "Thanks for your checkout at shop Django"
+            message_email = f"""
+            Xin chào {logged_user.username},
+            Cảm ơn bạn đã mua sắm tại MOBILE-STORE. Dưới đây là chi tiết hóa đơn của bạn:
+            
+            Email khách hàng: {logged_user.email}
+            Số điện thoại: {phone}
+            Địa chỉ giao hàng: {address}
+            Ngày đặt hàng: {order.create_date}
+            Mã đơn hàng: {order.id}
+            Tổng số tiền: {intcomma(order.total_amount)} VND
+
+            Nếu bạn có bất kỳ câu hỏi nào, vui lòng liên hệ chúng tôi qua email: anle36761@gmail.com
+            Cảm ơn bạn đã tin tưởng MOBILE-STORE!
+            """
+            recipient_list = [logged_user.email]
+            send_mail(subject, message_email, from_email, recipient_list)
+
+            # Đánh dấu thanh toán thành công
+            success = True
 
     return render(
         request=request,
         template_name="cart/checkout.html",
         context={
             "data_orderdetail": orderdetail,
-            "total_amount": order.total_amount,
+            "total_amount": order.total_amount if orderdetail else 0,
+            "message": message,
+            "success": success,
         },
     )
 
@@ -434,29 +457,9 @@ def user_logout(request):
     return redirect("login_user")  # hoặc 'index' nếu bạn muốn về trang chủ
 
 
-# def admin_dashboard(request):
-#     # Thống kê cơ bản
-#     total_users = User.objects.count()
-#     total_orders = Order.objects.count()
-#     total_revenue = Order.objects.aggregate(Sum('total_price'))['total_price__sum'] or 0
+@login_required
+def order_list(request):
+    orders = Order.objects.filter(user=request.user).order_by("-create_date")
 
-#     # Doanh thu theo tháng
-#     revenue_by_month = (
-#         Order.objects
-#         .annotate(month=TruncMonth('created_at'))
-#         .values('month')
-#         .annotate(total=Sum('total_price'))
-#         .order_by('month')
-#     )
-
-#     labels = [entry['month'].strftime('%m/%Y') for entry in revenue_by_month]
-#     data = [entry['total'] for entry in revenue_by_month]
-
-#     context = {
-#         'total_users': total_users,
-#         'total_orders': total_orders,
-#         'total_revenue': total_revenue,
-#         'chart_labels': json.dumps(labels),
-#         'chart_data': json.dumps(data),
-#     }
-#     return render(request, 'custom_admin/admin_dashboard.html', context)
+    context = {"orders": orders}
+    return render(request, "user/order_list.html", context)

@@ -1,0 +1,360 @@
+.product {
+    border-style: none;
+
+}
+
+#alert-add-product {
+    background-color: lightgray;
+    color: orange;
+    width: 500px;
+    position: fixed;
+    z-index: 1000;
+    top: 30%;
+    left: 35%;
+    display: none;
+    border: 5px;
+    border-radius: 10px;
+}
+
+.pricing {
+    border: 2px;
+    padding: 15px;
+    background-color: orange;
+    color: white;
+    height: 100px;
+    width: 100px;
+    border-radius: 50%;
+}
+
+#main div {
+    border: 1px solid black;
+    display: flex;
+    align-items: center;
+}
+
+.header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 10px 0;
+}
+
+.logo img {
+    height: 80px;
+    width: auto;
+}
+
+.search-box {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.search-form {
+    display: flex;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    overflow: hidden;
+    max-width: 350px;
+    width: 100%;
+}
+
+.search-form input[type="text"] {
+    border: none;
+    padding: 10px 15px;
+    flex-grow: 1;
+    outline: none;
+    font-size: 14px;
+}
+
+.search-form button {
+    background-color: #fe980f;
+    border: none;
+    padding: 0 15px;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.shop-menu ul {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.shop-menu li a {
+    color: #333;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.shop-menu li a:hover {
+    color: #fe980f;
+}
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+footer {
+    margin-top: auto;
+    /* Đẩy footer xuống dưới cùng */
+}
+
+#product-banner {
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+#product-banner .carousel-inner {
+    width: 100%;
+}
+
+#product-banner .carousel-item img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-bottom: 10px;
+}
+
+/* header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 999;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+} */
+
+#promo-popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 10000;
+    justify-content: center;
+    align-items: center;
+}
+
+#promo-content {
+    background: white;
+    padding: 20px;
+    border-radius: 16px;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    position: relative;
+    animation: popupFadeIn 0.5s ease;
+}
+
+#promo-content img {
+    width: 100%;
+    border-radius: 12px;
+    margin-bottom: 16px;
+}
+
+#promo-content h2 {
+    color: #d60000;
+    margin: 10px 0;
+}
+
+#promo-content p {
+    font-size: 16px;
+    color: #333;
+}
+
+#promo-close {
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    background: none;
+    border: none;
+    font-size: 22px;
+    color: #999;
+    cursor: pointer;
+}
+
+@keyframes popupFadeIn {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* #chatbot-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #0066ff;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 28px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    z-index: 9999;
+}
+
+#chatbot-box {
+    display: none;
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    width: 360px;
+    height: 500px;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 16px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+}
+
+#chatbot-box.expanded {
+    width: 90vw !important;
+    height: 90vh !important;
+    bottom: 5vh !important;
+    right: 5vw !important;
+}
+
+#chatbot-header {
+    background: #0066ff;
+    color: white;
+    padding: 12px;
+    font-weight: bold;
+    text-align: center;
+    font-size: 16px;
+    position: relative;
+}
+
+#chatbot-expand,
+#chatbot-close {
+    position: absolute;
+    top: 8px;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+#chatbot-expand {
+    right: 36px;
+}
+
+#chatbot-close {
+    right: 8px;
+}
+
+#chatbot-messages {
+    padding: 12px;
+    flex: 1;
+    overflow-y: auto;
+    font-size: 14px;
+    background: #f9f9f9;
+}
+
+#chatbot-input {
+    display: flex;
+    border-top: 1px solid #ddd;
+}
+
+#chatbot-input input {
+    flex: 1;
+    border: none;
+    padding: 12px;
+    font-size: 14px;
+}
+
+#chatbot-input button {
+    background: #0066ff;
+    color: white;
+    border: none;
+    padding: 12px 16px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.chatbot-msg {
+    margin: 6px 0;
+    max-width: 80%;
+    padding: 8px 12px;
+    border-radius: 16px;
+    line-height: 1.4;
+}
+
+.user {
+    background: #DCF8C6;
+    align-self: flex-end;
+    text-align: right;
+}
+
+.bot {
+    background: #e6ecff;
+    align-self: flex-start;
+    text-align: left;
+} */
+
+
+.carousel {
+    position: relative;
+    max-height: 400px;
+    overflow: hidden;
+    width: 100%;
+}
+
+.carousel-inner {
+    display: flex;
+    width: 100%;
+    transition: transform 0.5s ease;
+}
+
+.carousel-item {
+    flex: 0 0 100%;
+    display: none;
+}
+
+.carousel-item.active {
+    display: block;
+}
+
+.carousel-item img {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+}
+
+
+
+
+

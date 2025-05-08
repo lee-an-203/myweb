@@ -1,10 +1,58 @@
 {% extends "base_admin.html" %}
+{% load widget_tweaks %}
 {% block content %}
-<h3>{{ title }}</h3>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit" class="btn btn-success">Lưu</button>
-  <a href="{% url 'custom_admin:promotion_list' %}" class="btn btn-secondary">Quay lại</a>
-</form>
+<div class="container py-4">
+    <h3 class="text-primary mb-4">{{ title }}</h3>
+
+    <div class="card shadow-sm rounded-3">
+        <div class="card-body">
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+
+                <!-- Sản phẩm -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold" for="{{ form.product.id_for_label }}">Sản phẩm</label>
+                    {{ form.product|add_class:"form-control" }}
+                    {% if form.product.errors %}
+                    <div class="invalid-feedback d-block">{{ form.product.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Giảm giá -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold" for="{{ form.discount.id_for_label }}">Phần trăm giảm giá (%)</label>
+                    {{ form.discount|add_class:"form-control" }}
+                    {% if form.discount.errors %}
+                    <div class="invalid-feedback d-block">{{ form.discount.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Ngày bắt đầu -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold" for="{{ form.start_date.id_for_label }}">Ngày bắt đầu</label>
+                    {{ form.start_date|add_class:"form-control"|attr:"type:date" }}
+                    {% if form.start_date.errors %}
+                    <div class="invalid-feedback d-block">{{ form.start_date.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Ngày kết thúc -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold" for="{{ form.end_date.id_for_label }}">Ngày kết thúc</label>
+                    {{ form.end_date|add_class:"form-control"|attr:"type:date" }}
+                    {% if form.end_date.errors %}
+                    <div class="invalid-feedback d-block">{{ form.end_date.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Nút -->
+                <div class="d-flex justify-content-between">
+                    <button type="submit" class="btn btn-success px-4">💾 Lưu</button>
+                    <a href="{% url 'custom_admin:promotion_list' %}" class="btn btn-secondary px-4">↩ Quay lại</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}

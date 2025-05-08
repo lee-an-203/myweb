@@ -36,6 +36,8 @@ urlpatterns = [
     path('orders/', views.order_list, name='order_list'),
     path('orders/<int:pk>/edit/', views.order_edit, name='order_edit'),
     path('orders/<int:pk>/delete/', views.order_delete, name='order_delete'),
+    path('orders/update-status/', views.order_update_status, name='order_update_status'),
+    path('orders/<int:pk>/detail/', views.order_detail, name='order_detail'),
 
 
     path('order-details/', views.order_detail_list, name='order_detail_list'),
@@ -54,5 +56,8 @@ urlpatterns = [
     path('ratings/<int:pk>/edit/', views.rating_edit, name='rating_edit'),
     path('ratings/<int:pk>/delete/', views.rating_delete, name='rating_delete'),
 
+    path('users/', views.user_list, name='user_list'),
+    path('users/edit/<int:pk>/', views.user_edit, name='user_edit'),
+    path('users/delete/<int:pk>/', views.user_delete, name='user_delete'),
 
 ]

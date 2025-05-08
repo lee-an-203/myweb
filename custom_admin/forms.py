@@ -12,11 +12,20 @@ from myshop.models import (
 from django.contrib.auth.models import User
 
 
+class UserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ["username", "email", "is_staff", "is_active"]
+
+
 class BrandForm(forms.ModelForm):
     class Meta:
         model = Brand
         fields = ["name", "description", "country", "icon", "category"]
         widgets = {
+            "description": forms.Textarea(attrs={"rows": 3}),
+            "country": forms.Textarea(attrs={"rows": 2}),
+            "icon": forms.TextInput(attrs={"class": "form-control"}),
             "category": forms.CheckboxSelectMultiple(),
         }
 
@@ -28,6 +37,11 @@ class CategoryForm(forms.ModelForm):
 
 
 class ProductForm(forms.ModelForm):
+    STATUS_CHOICES = [
+        ("con_ban", "Còn bán"),
+        ("dung_ban", "Dừng bán"),
+    ]
+
     class Meta:
         model = Product
         fields = [
@@ -68,6 +82,9 @@ class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
         fields = ["user", "create_date", "total_amount", "phone", "address", "status"]
+        widgets = {
+            "status": forms.Select(choices=Order.STATUS_CHOICES),
+        }
 
 
 class OrderDetailForm(forms.ModelForm):

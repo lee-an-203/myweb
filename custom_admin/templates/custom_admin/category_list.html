@@ -9,7 +9,8 @@
     <table class="table table-bordered table-hover mb-0">
       <thead class="table-light">
         <tr>
-            <th>ID</th>
+            <!-- <th>ID</th> -->
+            <th>STT</th>
             <th>Tên</th>
             <th>Mô tả</th>
             <th>Logo</th>
@@ -19,7 +20,8 @@
     <tbody>
         {% for category in categories %}
         <tr>
-            <td>{{ category.id }}</td>
+            <!-- <td>{{ category.id }}</td> -->
+            <td>{{ forloop.counter }}</td>
             <td>{{ category.name }}</td>
             <td>{{ category.description }}</td>
             <td><img src="{% static category.icon %}" alt="{{ category.name }}" style="width: 50px; height: auto;"></td>

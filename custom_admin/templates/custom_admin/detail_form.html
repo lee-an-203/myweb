@@ -1,10 +1,93 @@
 {% extends "base_admin.html" %}
+{% load widget_tweaks %}
 {% block content %}
-<h3>{{ title }}</h3>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-success">Lưu</button>
-    <a href="{% url 'custom_admin:detail_list' %}" class="btn btn-secondary">Quay lại</a>
-</form>
+<div class="container py-4">
+    <h3 class="text-primary mb-4">{{ title }}</h3>
+
+    <div class="card shadow-sm rounded-3" style="max-height: 520px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 5px;">
+        <div class="card-body">
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+
+                <!-- Tên chi tiết -->
+                <div class="mb-3">
+                    <label for="{{ form.name.id_for_label }}" class="form-label fw-bold">Tên chi tiết</label>
+                    {{ form.name|add_class:"form-control" }}
+                    {% if form.name.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.name.errors.0 }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Màn hình -->
+                <div class="mb-3">
+                    <label for="{{ form.screen.id_for_label }}" class="form-label fw-bold">Màn hình</label>
+                    {{ form.screen|add_class:"form-control" }}
+                </div>
+
+                <!-- Hệ điều hành -->
+                <div class="mb-3">
+                    <label for="{{ form.operating_system.id_for_label }}" class="form-label fw-bold">Hệ điều hành</label>
+                    {{ form.operating_system|add_class:"form-control" }}
+                </div>
+
+                <!-- Camera sau -->
+                <div class="mb-3">
+                    <label for="{{ form.rear_camera.id_for_label }}" class="form-label fw-bold">Camera sau</label>
+                    {{ form.rear_camera|add_class:"form-control" }}
+                </div>
+
+                <!-- Camera trước -->
+                <div class="mb-3">
+                    <label for="{{ form.front_camera.id_for_label }}" class="form-label fw-bold">Camera trước</label>
+                    {{ form.front_camera|add_class:"form-control" }}
+                </div>
+
+                <!-- Chip -->
+                <div class="mb-3">
+                    <label for="{{ form.chip.id_for_label }}" class="form-label fw-bold">Chip</label>
+                    {{ form.chip|add_class:"form-control" }}
+                </div>
+
+                <!-- RAM -->
+                <div class="mb-3">
+                    <label for="{{ form.RAM.id_for_label }}" class="form-label fw-bold">RAM</label>
+                    {{ form.RAM|add_class:"form-control" }}
+                </div>
+
+                <!-- Bộ nhớ -->
+                <div class="mb-3">
+                    <label for="{{ form.memory.id_for_label }}" class="form-label fw-bold">Bộ nhớ</label>
+                    {{ form.memory|add_class:"form-control" }}
+                </div>
+
+                <!-- SIM -->
+                <div class="mb-3">
+                    <label for="{{ form.sim.id_for_label }}" class="form-label fw-bold">SIM</label>
+                    {{ form.sim|add_class:"form-control" }}
+                </div>
+
+                <!-- Pin -->
+                <div class="mb-3">
+                    <label for="{{ form.battery.id_for_label }}" class="form-label fw-bold">Dung lượng pin</label>
+                    {{ form.battery|add_class:"form-control" }}
+                </div>
+
+                <!-- Sạc -->
+                <div class="mb-3">
+                    <label for="{{ form.adapter.id_for_label }}" class="form-label fw-bold">Bộ sạc</label>
+                    {{ form.adapter|add_class:"form-control" }}
+                </div>
+
+                <!-- Nút -->
+                <div class="d-flex justify-content-between">
+                    <button type="submit" class="btn btn-success px-4">💾 Lưu</button>
+                    <a href="{% url 'custom_admin:detail_list' %}" class="btn btn-secondary px-4">↩ Quay lại</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}

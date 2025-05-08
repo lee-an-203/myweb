@@ -1,10 +1,106 @@
 {% extends "base_admin.html" %}
+{% load widget_tweaks %}
+{% load humanize %}
 {% block content %}
-<h3>{{ title }}</h3>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit" class="btn btn-success">Lưu</button>
-  <a href="{% url 'custom_admin:order_list' %}" class="btn btn-secondary">Quay lại</a>
-</form>
+<div class="container py-4">
+    <h3 class="text-primary mb-4">{{ title }}</h3>
+
+    <div class="card shadow-sm rounded-3" style="max-height: 520px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 5px;">
+        <div class="card-body">
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+
+                <!-- Người dùng -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold" for="{{ form.user.id_for_label }}">Người đặt hàng</label>
+                    {{ form.user|add_class:"form-control" }}
+                    {% if form.user.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.user.errors.0 }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Ngày tạo -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold" for="{{ form.create_date.id_for_label }}">Ngày tạo</label>
+                    {{ form.create_date|add_class:"form-control" }}
+                    {% if form.create_date.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.create_date.errors.0 }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Số tiền -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold" for="{{ form.total_amount.id_for_label }}">Tổng tiền</label>
+                    {{ form.total_amount|add_class:"form-control" }}
+                    {% if form.total_amount.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.total_amount.errors.0 }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Số điện thoại -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold" for="{{ form.phone.id_for_label }}">Số điện thoại</label>
+                    {{ form.phone|add_class:"form-control" }}
+                    {% if form.phone.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.phone.errors.0 }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Địa chỉ -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold" for="{{ form.address.id_for_label }}">Địa chỉ</label>
+                    {{ form.address|add_class:"form-control" }}
+                    {% if form.address.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.address.errors.0 }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Trạng thái -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold" for="{{ form.status.id_for_label }}">Trạng thái</label>
+                    <select name="status" class="form-select" id="{{ form.status.id_for_label }}">
+                        <option value="{{ form.instance.status }}" selected>
+                            {% if form.instance.status == 0 %}🕒 Đang chờ xác nhận
+                            {% elif form.instance.status == 1 %}✅ Đã xác nhận
+                            {% elif form.instance.status == 2 %}🚚 Đang giao hàng
+                            {% elif form.instance.status == 3 %}📦 Giao hàng thành công
+                            {% else %}❓ Không xác định
+                            {% endif %}
+                        </option>
+                        {% if form.instance.status < 3 %}
+                        <option value="{{ form.instance.status|add:1 }}">
+                            {% if form.instance.status == 0 %}✅ Đã xác nhận
+                            {% elif form.instance.status == 1 %}🚚 Đang giao hàng
+                            {% elif form.instance.status == 2 %}📦 Giao hàng thành công
+                            {% endif %}
+                        </option>
+                        {% endif %}
+                    </select>
+                    {% if form.status.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.status.errors.0 }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Nút hành động -->
+                <div class="d-flex justify-content-between">
+                    <button type="submit" class="btn btn-success px-4">💾 Lưu</button>
+                    <a href="{% url 'custom_admin:order_list' %}" class="btn btn-secondary px-4">↩ Quay lại</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}

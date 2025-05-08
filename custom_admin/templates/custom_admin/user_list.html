@@ -1,32 +1,40 @@
-<!-- {% extends 'base_admin.html' %}
+{% extends "base_admin.html" %}
+{% load static %}
+
 {% block content %}
-<h3>Quản lý tài khoản người dùng</h3>
-<a href="{% url 'custom_admin:user_add' %}" class="btn btn-success mb-3">➕ Thêm người dùng</a>
-<table class="table table-bordered table-striped">
+<h3>Danh sách người dùng</h3>
+<table class="table table-bordered table-hover">
   <thead>
     <tr>
-      <th>ID</th>
-      <th>Tên đăng nhập</th>
+      <th>STT</th>
+      <th>Tên người dùng</th>
       <th>Email</th>
-      <th>Trạng thái</th>
-      <th>Quyền</th>
+      <th>Người dùng</th>
+      <!-- <th>Active?</th> -->
       <th>Hành động</th>
     </tr>
   </thead>
   <tbody>
     {% for user in users %}
     <tr>
-      <td>{{ user.id }}</td>
+      <td>{{ forloop.counter }}</td>
       <td>{{ user.username }}</td>
       <td>{{ user.email }}</td>
-      <td>{{ user.is_active|yesno:"Hoạt động,Không hoạt động" }}</td>
-      <td>{{ user.is_staff|yesno:"Quản trị,Người dùng" }}</td>
       <td>
-        <a href="{% url 'custom_admin:user_edit' user.id %}" class="btn btn-sm btn-primary">Sửa</a>
-        <a href="{% url 'custom_admin:user_delete' user.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Xác nhận xóa?')">Xóa</a>
+        {% if user.is_staff %}
+          Quản trị viên
+        {% else %}
+          Khách hàng
+        {% endif %}
+      </td>
+      <!-- <td>{{ user.is_active }}</td> -->
+      <td>
+        <a href="{% url 'custom_admin:user_edit' user.id %}" class="btn btn-sm btn-warning">Sửa</a>
+        <a href="{% url 'custom_admin:user_delete' user.id %}" class="btn btn-sm btn-danger"
+          onclick="return confirm('Bạn có chắc muốn xoá người dùng này?');">Xoá</a>
       </td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
-{% endblock %} -->
+{% endblock %}

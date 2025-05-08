@@ -1,52 +1,107 @@
 {% extends "base_admin.html" %}
 {% load humanize %}
 {% block content %}
-<h2>📊 Báo cáo tổng hợp</h2>
+<div class="container mt-4">
+    <h2 class="text-center mb-4" style="color: #007bff;">📊 Báo cáo tổng hợp</h2>
+
+    <!-- Form tìm kiếm -->
+    <form method="POST" class="mb-4">
+        {% csrf_token %}
+        <div class="row g-3">
+            <div class="col-md-3">
+                <label for="start_date" class="form-label">Từ ngày</label>
+                <input type="date" class="form-control" id="start_date" name="start_date" value="{{ start_date }}">
+            </div>
+            <div class="col-md-3">
+                <label for="end_date" class="form-label">Đến ngày</label>
+                <input type="date" class="form-control" id="end_date" name="end_date" value="{{ end_date }}">
+            </div>
+            <!-- <div class="col-md-4">
+                <label for="product_query" class="form-label">Tìm sản phẩm</label>
+                <input type="text" class="form-control" id="product_query" name="product_query" value="{{ product_query }}" placeholder="Nhập tên sản phẩm">
+            </div> -->
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary me-2">Tìm kiếm</button>
+                <a href="{% url 'custom_admin:dashboard' %}" class="btn btn-secondary">Xóa bộ lọc</a>
+            </div>
+        </div>
+    </form>
+
+    <!-- Thống kê -->
+    <div class="row">
+        <!-- Doanh thu -->
+        <div class="col-md-4">
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5>Doanh thu</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li><strong>Hôm nay:</strong> {{ revenue_today|intcomma }} VND</li>
+                        <li><strong>Tháng này:</strong> {{ revenue_month|intcomma }} VND</li>
+                        <li><strong>Năm nay:</strong> {{ revenue_year|intcomma }} VND</li>
+                    </ul>
+                    <canvas id="revenueChart" height="100"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Số đơn hàng -->
+        <div class="col-md-4">
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5>Số đơn hàng</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li><strong>Hôm nay:</strong> {{ orders_today }}</li>
+                        <li><strong>Tháng này:</strong> {{ orders_month }}</li>
+                        <li><strong>Năm nay:</strong> {{ orders_year }}</li>
+                    </ul>
+                    <canvas id="ordersChart" height="100"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top sản phẩm bán chạy -->
+        <div class="col-md-4">
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    <h5>Top 5 sản phẩm bán chạy</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        {% for item in top_products %}
+                        <li>{{ item.product__name }}: {{ item.total_sold }} cái</li>
+                        {% empty %}
+                        <li>Không có dữ liệu</li>
+                        {% endfor %}
+                    </ul>
+                    <canvas id="productChart" height="100"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Doanh thu theo tháng -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-purple text-white" style="background-color: #673ab7;">
+            <h5>📈 Doanh thu theo tháng</h5>
+        </div>
+        <div class="card-body">
+            <canvas id="monthlyRevenueChart" height="120"></canvas>
+        </div>
+    </div>
+</div>
 
 <!-- Thêm Chart.js & Datalabels Plugin -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 
-<div class="container">
-    <h1>Thống kê quản trị</h1>
-
-    <h2>Doanh thu</h2>
-    <ul>
-        <li>Hôm nay: {{ revenue_today|intcomma }} VND</li>
-        <li>Tháng này: {{ revenue_month|intcomma }} VND</li>
-        <li>Năm nay: {{ revenue_year|intcomma }} VND</li>
-    </ul>
-
-    <canvas id="revenueChart" height="100"></canvas>
-
-    <h2>Số đơn hàng</h2>
-    <ul>
-        <li>Hôm nay: {{ orders_today }}</li>
-        <li>Tháng này: {{ orders_month }}</li>
-        <li>Năm nay: {{ orders_year }}</li>
-    </ul>
-
-    <canvas id="ordersChart" height="100"></canvas>
-
-    <h2>Top 5 sản phẩm bán chạy</h2>
-    <ul>
-        {% for item in top_products %}
-        <li>{{ item.product__name }}: {{ item.total_sold }} cái</li>
-        {% endfor %}
-    </ul>
-
-    <canvas id="productChart" height="100"></canvas>
-
-    <h2>Người dùng mới trong tháng: {{ new_users }}</h2>
-
-    <h2>📈 Doanh thu theo tháng</h2>
-    <canvas id="monthlyRevenueChart" height="120"></canvas>
-</div>
-
 <script>
     Chart.register(ChartDataLabels);
 
-    // Doanh thu theo ngày/tháng/năm
+    // Doanh thu
     new Chart(document.getElementById('revenueChart'), {
         type: 'bar',
         data: {
@@ -54,7 +109,9 @@
             datasets: [{
                 label: 'Doanh thu (VND)',
                 data: [{{ revenue_today }}, {{ revenue_month }}, {{ revenue_year }}],
-                backgroundColor: '#4caf50'
+                backgroundColor: ['#28a745', '#20c997', '#17a2b8'],
+                borderColor: ['#1e7e34', '#1aab87', '#117a8b'],
+                borderWidth: 1
             }]
         },
         options: {
@@ -62,24 +119,33 @@
                 datalabels: {
                     anchor: 'end',
                     align: 'top',
-                    formatter: v => v.toLocaleString('vi-VN'),
-                    font: { weight: 'bold' }
+                    formatter: v => v.toLocaleString('vi-VN') + ' VND',
+                    font: { weight: 'bold', size: 12 },
+                    color: '#000'
+                },
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: ctx => `${ctx.dataset.label}: ${ctx.raw.toLocaleString('vi-VN')} VND`
+                    }
                 }
             },
             responsive: true,
             scales: {
                 y: {
                     beginAtZero: true,
+                    grid: { color: '#e9ecef' },
                     ticks: {
-                        callback: value => value.toLocaleString('vi-VN')
+                        callback: value => value.toLocaleString('vi-VN'),
+                        stepSize: Math.max({{ revenue_year|default:1 }} / 5, 100000)
                     }
-                }
+                },
+                x: { grid: { display: false } }
             }
-        },
-        plugins: [ChartDataLabels]
+        }
     });
 
-    // Số đơn hàng theo ngày/tháng/năm
+    // Số đơn hàng
     new Chart(document.getElementById('ordersChart'), {
         type: 'bar',
         data: {
@@ -87,7 +153,9 @@
             datasets: [{
                 label: 'Số đơn hàng',
                 data: [{{ orders_today }}, {{ orders_month }}, {{ orders_year }}],
-                backgroundColor: '#2196f3'
+                backgroundColor: ['#007bff', '#6610f2', '#6f42c1'],
+                borderColor: ['#005cbf', '#520dc2', '#5a32a3'],
+                borderWidth: 1
             }]
         },
         options: {
@@ -96,71 +164,13 @@
                     anchor: 'end',
                     align: 'top',
                     formatter: v => v,
-                    font: { weight: 'bold' }
-                }
-            },
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        },
-        plugins: [ChartDataLabels]
-    });
-
-    // Top sản phẩm bán chạy
-    new Chart(document.getElementById('productChart'), {
-        type: 'bar',
-        data: {
-            labels: [{% for item in top_products %}'{{ item.product__name }}'{% if not forloop.last %}, {% endif %}{% endfor %}],
-            datasets: [{
-                label: 'Số lượng bán',
-                data: [{% for item in top_products %}{{ item.total_sold }}{% if not forloop.last %}, {% endif %}{% endfor %}],
-                backgroundColor: '#ff9800'
-            }]
-        },
-        options: {
-            plugins: {
-                datalabels: {
-                    anchor: 'end',
-                    align: 'top',
-                    formatter: v => v,
-                    font: { weight: 'bold' }
-                }
-            },
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        },
-        plugins: [ChartDataLabels]
-    });
-
-    // Biểu đồ doanh thu theo tháng
-    new Chart(document.getElementById('monthlyRevenueChart'), {
-        type: 'bar',
-        data: {
-            labels: {{ chart_labels|safe }},
-            datasets: [{
-                label: 'Doanh thu theo tháng (VND)',
-                data: {{ chart_data|safe }},
-                backgroundColor: '#673ab7'
-            }]
-        },
-        options: {
-            plugins: {
-                datalabels: {
-                    anchor: 'end',
-                    align: 'top',
-                    formatter: v => v.toLocaleString('vi-VN'),
-                    font: { weight: 'bold' }
+                    font: { weight: 'bold', size: 12 },
+                    color: '#000'
                 },
+                legend: { display: false },
                 tooltip: {
                     callbacks: {
-                        label: context => context.dataset.label + ': ' + context.raw.toLocaleString('vi-VN') + ' VND'
+                        label: ctx => `${ctx.dataset.label}: ${ctx.raw}`
                     }
                 }
             },
@@ -168,13 +178,98 @@
             scales: {
                 y: {
                     beginAtZero: true,
-                    ticks: {
-                        callback: value => value.toLocaleString('vi-VN')
+                    grid: { color: '#e9ecef' },
+                    ticks: { stepSize: 1 }
+                },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+
+    // Top sản phẩm bán chạy (cột ngang)
+    new Chart(document.getElementById('productChart'), {
+        type: 'bar',
+        data: {
+            labels: [{% for item in top_products %}'{{ item.product__name|truncatechars:30 }}'{% if not forloop.last %}, {% endif %}{% endfor %}],
+            datasets: [{
+                label: 'Số lượng bán',
+                data: [{% for item in top_products %}{{ item.total_sold }}{% if not forloop.last %}, {% endif %}{% endfor %}],
+                backgroundColor: ['#ffc107', '#fd7e14', '#f1c40f', '#e67e22', '#d4a017'],
+                borderColor: ['#d39e00', '#c76300', '#dab10d', '#b5651d', '#b58900'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            indexAxis: 'y', // Chuyển sang cột ngang
+            plugins: {
+                datalabels: {
+                    anchor: 'end',
+                    align: 'right',
+                    formatter: v => v,
+                    font: { weight: 'bold', size: 12 },
+                    color: '#000'
+                },
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: ctx => `${ctx.dataset.label}: ${ctx.raw}`
                     }
                 }
+            },
+            responsive: true,
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    grid: { color: '#e9ecef' },
+                    ticks: { stepSize: 1 }
+                },
+                y: { grid: { display: false } }
             }
+        }
+    });
+
+    // Doanh thu theo tháng (biểu đồ đường)
+    new Chart(document.getElementById('monthlyRevenueChart'), {
+        type: 'line',
+        data: {
+            labels: {{ chart_labels|safe }},
+            datasets: [{
+                label: 'Doanh thu theo tháng (VND)',
+                data: {{ chart_data|safe }},
+                fill: false,
+                borderColor: '#673ab7',
+                backgroundColor: '#673ab7',
+                tension: 0.1
+            }]
         },
-        plugins: [ChartDataLabels]
+        options: {
+            plugins: {
+                datalabels: {
+                    anchor: 'end',
+                    align: 'top',
+                    formatter: v => v.toLocaleString('vi-VN') + ' VND',
+                    font: { weight: 'bold', size: 12 },
+                    color: '#000'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: ctx => `${ctx.dataset.label}: ${ctx.raw.toLocaleString('vi-VN')} VND`
+                    }
+                }
+            },
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { color: '#e9ecef' },
+                    ticks: {
+                        callback: value => value.toLocaleString('vi-VN'),
+                        stepSize: Math.max(Math.max(...{{ chart_data|safe }}||[1]) / 5, 100000)
+                    }
+                },
+                x: { grid: { display: false } }
+            }
+        }
     });
 </script>
 {% endblock %}

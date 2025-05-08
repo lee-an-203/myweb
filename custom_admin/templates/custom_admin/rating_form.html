@@ -1,10 +1,49 @@
 {% extends "base_admin.html" %}
+{% load widget_tweaks %}
 {% block content %}
-<h3>{{ title }}</h3>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-success">Lưu</button>
-    <a href="{% url 'custom_admin:rating_list' %}" class="btn btn-secondary">Quay lại</a>
-</form>
+<div class="container py-4">
+    <h3 class="text-primary mb-4">{{ title }}</h3>
+
+    <div class="card shadow-sm rounded-3">
+        <div class="card-body">
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+
+                <!-- Sản phẩm -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold" for="{{ form.product.id_for_label }}">Sản phẩm</label>
+                    {{ form.product|add_class:"form-control" }}
+                    {% if form.product.errors %}
+                    <div class="invalid-feedback d-block">{{ form.product.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Người dùng -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold" for="{{ form.user.id_for_label }}">Người đánh giá</label>
+                    {{ form.user|add_class:"form-control" }}
+                    {% if form.user.errors %}
+                    <div class="invalid-feedback d-block">{{ form.user.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Sao -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold" for="{{ form.stars.id_for_label }}">Số sao</label>
+                    {{ form.stars|add_class:"form-select" }}
+                    {% if form.stars.errors %}
+                    <div class="invalid-feedback d-block">{{ form.stars.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Nút -->
+                <div class="d-flex justify-content-between">
+                    <button type="submit" class="btn btn-success px-4">💾 Lưu</button>
+                    <a href="{% url 'custom_admin:rating_list' %}" class="btn btn-secondary px-4">↩ Quay lại</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}
