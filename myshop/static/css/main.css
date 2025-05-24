@@ -8,7 +8,7 @@
 
 body {
   font-family: 'Roboto', sans-serif;
-  background:;
+  background: white;
   position: relative;
   font-weight:400px;
 }
@@ -783,10 +783,10 @@ h2.title:before{
 }
 
 .shipping {
-  background-color: #F2F2F2;
+  background-color: white;
   margin-top: 40px;
   overflow: hidden;
-  padding-top: 20px;
+  /* padding-top: 20px; */
   position: relative;
 }
 
@@ -899,7 +899,7 @@ h2.title {
   transition: height 500ms ease 0s;
   width: 100%;
   display: block;
-  opacity:;
+  opacity: 0;
 }
 
 .single-products:hover .product-overlay {

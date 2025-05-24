@@ -723,3 +723,34 @@ def user_delete(request, pk):
     user = get_object_or_404(User, pk=pk)
     user.delete()
     return redirect('custom_admin:user_list')
+
+
+from django.template.loader import get_template
+from django.http import HttpResponse
+from xhtml2pdf import pisa
+from io import BytesIO
+
+@login_required
+@user_passes_test(is_admin)
+def export_invoice_pdf(request, pk):
+    order = get_object_or_404(Order, pk=pk)
+    template_path = 'custom_admin/invoice_pdf.html'
+
+    context = {
+        'order': order
+    }
+
+    # Render template
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'filename=invoice_order_{order.id}.pdf'
+    template = get_template(template_path)
+    html = template.render(context)
+
+    # Tạo PDF
+    pisa_status = pisa.CreatePDF(
+        src=html, dest=response, encoding='utf-8'
+    )
+
+    if pisa_status.err:
+        return HttpResponse('Lỗi khi tạo PDF: %s' % pisa_status.err)
+    return response

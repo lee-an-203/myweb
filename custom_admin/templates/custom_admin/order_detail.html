@@ -59,6 +59,7 @@
 
       <div class="mt-4">
         <a href="{% url 'custom_admin:order_list' %}" class="btn btn-secondary">↩ Quay lại</a>
+        <a href="{% url 'custom_admin:order_export' order.id %}" class="btn btn-success ms-2">📄 Xuất hóa đơn (PDF)</a>
       </div>
     </div>
   </div>

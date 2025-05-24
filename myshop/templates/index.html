@@ -8,15 +8,40 @@ Home |
 {% load custom_filter %}
 
 <style>
-    .features_items h2 {
-        font-size: 24px;
-        font-weight: bold;
-        text-align: left;
+    .pagination {
+        display: flex;
+        justify-content: center;
         margin-top: 20px;
-        margin-bottom: 15px;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .pagination a,
+    .pagination span {
+        display: inline-block;
+        padding: 8px 14px;
+        text-decoration: none;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: white;
         color: #333;
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+    .pagination a:hover {
+        background-color: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+
+    .pagination span {
+        background-color: #f8f9fa;
+        font-weight: bold;
+        color: #007bff;
+        border-color: #007bff;
     }
 </style>
+
 
 <script>
     $(document).ready(function () {
@@ -38,9 +63,13 @@ Home |
                 <div class="left-sidebar">
                     {% include 'common/categories.html' %}
                     <div class="shipping text-center">
-                        <img src="{% static 'images/home/w7wo0q2b.png' %}" alt="" />
-                        <img src="{% static 'images/home/shipping.jpg' %}" alt="" />
-                        <img src="{% static 'images/home/baner6.jpg' %}" alt="" />
+                        <img src="https://24hstore.vn/images/products/cat/original/iphone-14-series-cu_1670214127.jpg" alt="" />
+                        <img src="https://24hstore.vn/images/products/cat/original/iphone-12_1664868999.jpg" alt="" />
+                        <img src="https://24hstore.vn/images/products/cat/original/iphone-xxrxsxs-max_1664868980.jpg" alt="" />
+                        <img src="https://24hstore.vn/images/products/cat/original/11-series-cu_1687337426.jpg" alt="" />
+                        <img src="{% static 'images/home/j9oh03vf.png' %}" alt="" />
+                        <img src="https://24hstore.vn/images/products/cat/original/banner_1654157537_1655112123.jpeg" alt="">
+
                     </div>
                 </div>
             </div>
@@ -60,13 +89,14 @@ Home |
                     </div>
                     <div class="pagination">
                         {% if page_obj.has_previous %}
-                        <a href="?q={{ query }}&page={{ page_obj.previous_page_number }}">Trước</a>
+                        <a href="?q={{ query }}&page={{ page_obj.previous_page_number }}">← Trước</a>
                         {% endif %}
                         <span>Trang {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
                         {% if page_obj.has_next %}
-                        <a href="?q={{ query }}&page={{ page_obj.next_page_number }}">Tiếp</a>
+                        <a href="?q={{ query }}&page={{ page_obj.next_page_number }}">Tiếp →</a>
                         {% endif %}
                     </div>
+
                     {% else %}
                     <!-- SẢN PHẨM NỔI BẬT -->
                     <div style="margin-bottom: 20px;">
@@ -79,13 +109,14 @@ Home |
                     </div>
                     <div class="pagination">
                         {% if featured_page.has_previous %}
-                        <a href="?featured_page={{ featured_page.previous_page_number }}">Trước</a>
+                        <a href="?featured_page={{ featured_page.previous_page_number }}">← Trước</a>
                         {% endif %}
                         <span>Trang {{ featured_page.number }} / {{ featured_page.paginator.num_pages }}</span>
                         {% if featured_page.has_next %}
-                        <a href="?featured_page={{ featured_page.next_page_number }}">Tiếp</a>
+                        <a href="?featured_page={{ featured_page.next_page_number }}">Tiếp →</a>
                         {% endif %}
                     </div>
+
 
                     <!-- SẢN PHẨM BÁN CHẠY -->
                     <div style="margin-top: 40px; margin-bottom: 20px;">
@@ -98,13 +129,14 @@ Home |
                     </div>
                     <div class="pagination">
                         {% if bestseller_page.has_previous %}
-                        <a href="?bestseller_page={{ bestseller_page.previous_page_number }}">Trước</a>
+                        <a href="?bestseller_page={{ bestseller_page.previous_page_number }}">← Trước</a>
                         {% endif %}
                         <span>Trang {{ bestseller_page.number }} / {{ bestseller_page.paginator.num_pages }}</span>
                         {% if bestseller_page.has_next %}
-                        <a href="?bestseller_page={{ bestseller_page.next_page_number }}">Tiếp</a>
+                        <a href="?bestseller_page={{ bestseller_page.next_page_number }}">Tiếp →</a>
                         {% endif %}
                     </div>
+
                     {% endif %}
                 </div>
             </div>

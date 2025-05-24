@@ -38,6 +38,7 @@ urlpatterns = [
     path('orders/<int:pk>/delete/', views.order_delete, name='order_delete'),
     path('orders/update-status/', views.order_update_status, name='order_update_status'),
     path('orders/<int:pk>/detail/', views.order_detail, name='order_detail'),
+    path("orders/<int:pk>/export/", views.export_invoice_pdf, name="order_export"),
 
 
     path('order-details/', views.order_detail_list, name='order_detail_list'),

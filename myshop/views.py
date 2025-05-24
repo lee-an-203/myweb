@@ -47,6 +47,33 @@ from .forms import UserUpdateForm, AvatarUpdateForm, CustomPasswordChangeForm
 from django.db.models.functions import TruncMonth
 from django.db.models import Sum
 import json
+from myshop.forms import PasswordResetCustomForm
+from django.contrib.auth.hashers import make_password
+
+
+def forgot_password(request):
+    message = ""
+    success = ""
+
+    if request.method == "POST":
+        username = request.POST.get("username")
+        new_password = request.POST.get("new_password")
+        confirm_password = request.POST.get("confirm_password")
+
+        if new_password != confirm_password:
+            message = "Mật khẩu xác nhận không khớp."
+        else:
+            try:
+                user = User.objects.get(username=username)
+                user.password = make_password(new_password)
+                user.save()
+                success = "Mật khẩu đã được đặt lại thành công. Vui lòng đăng nhập lại."
+            except User.DoesNotExist:
+                message = "Tài khoản không tồn tại."
+
+    return render(
+        request, "user/forgot_password.html", {"message": message, "success": success}
+    )
 
 
 # @login_required
@@ -376,7 +403,15 @@ def show_cart(request):
         },
     )
 
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.template.loader import render_to_string
+from django.core.mail import EmailMultiAlternatives
+from django.conf import settings
+from django.utils.html import strip_tags
+from django.contrib.humanize.templatetags.humanize import intcomma
 
+from .models import Order
 @login_required(login_url="/user/login")
 def checkout(request):
     logged_user = request.user
@@ -394,56 +429,48 @@ def checkout(request):
         phone = request.POST.get("phone", "").strip()
         address = request.POST.get("address", "").strip()
 
-        # Kiểm tra dữ liệu đầu vào
         if not phone or not address:
             message = "Vui lòng nhập đầy đủ số điện thoại và địa chỉ."
         else:
-            # Xử lý lưu đơn hàng
+            # Cập nhật đơn hàng
             order.phone = phone
             order.address = address
             order.total_amount = sum([item.amount for item in orderdetail])
-            order.status = 1  # Đơn hàng thành công
+            order.status = 1  # đã thanh toán
             order.save()
 
-            # Cập nhật số lượng tồn kho
+            # Cập nhật tồn kho
             for od_detail in orderdetail:
                 od_detail.product.stock_quantity -= od_detail.quantity
                 od_detail.product.save()
 
-            # Gửi email xác nhận
-            html_template = "cart/message.html"
-            context = {
+            # Gửi email HTML
+            html_content = render_to_string("cart/message.html", {
+                "user": logged_user,
+                "order": order,
                 "data_orderdetail": orderdetail,
-                "total_amount": order.total_amount,
-            }
-            html_content = render_to_string(html_template, {"context": context})
+                "total_amount": order.total_amount
+            })
 
+            subject = "Cảm ơn bạn đã đặt hàng tại MOBILE-STORE"
             from_email = settings.EMAIL_HOST_USER
-            subject = "Thanks for your checkout at shop Django"
-            message_email = f"""
-            Xin chào {logged_user.username},
-            Cảm ơn bạn đã mua sắm tại MOBILE-STORE. Dưới đây là chi tiết hóa đơn của bạn:
-            
-            Email khách hàng: {logged_user.email}
-            Số điện thoại: {phone}
-            Địa chỉ giao hàng: {address}
-            Ngày đặt hàng: {order.create_date}
-            Mã đơn hàng: {order.id}
-            Tổng số tiền: {intcomma(order.total_amount)} VND
-
-            Nếu bạn có bất kỳ câu hỏi nào, vui lòng liên hệ chúng tôi qua email: anle36761@gmail.com
-            Cảm ơn bạn đã tin tưởng MOBILE-STORE!
-            """
             recipient_list = [logged_user.email]
-            send_mail(subject, message_email, from_email, recipient_list)
 
-            # Đánh dấu thanh toán thành công
+            msg = EmailMultiAlternatives(
+                subject=subject,
+                body=strip_tags(html_content),
+                from_email=from_email,
+                to=recipient_list,
+            )
+            msg.attach_alternative(html_content, "text/html")
+            msg.send()
+
             success = True
 
     return render(
-        request=request,
-        template_name="cart/checkout.html",
-        context={
+        request,
+        "cart/checkout.html",
+        {
             "data_orderdetail": orderdetail,
             "total_amount": order.total_amount if orderdetail else 0,
             "message": message,

@@ -29,4 +29,6 @@ urlpatterns = [
     path('account_info/', views.account_info, name='account_info'),
     path('orders/', views.order_list, name='order_list'),
 
+    path('forgot-password/', views.forgot_password, name='forgot_password'),
+
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,7 +1,9 @@
 {% extends "base_admin.html" %}
 {% load humanize %}
 {% block content %}
-<div class="container mt-4">
+
+
+<div class="container mt-4" style="max-height: 600px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 5px; padding: 10px;">
     <h2 class="text-center mb-4" style="color: #007bff;">📊 Báo cáo tổng hợp</h2>
 
     <!-- Form tìm kiếm -->
@@ -20,7 +22,7 @@
                 <label for="product_query" class="form-label">Tìm sản phẩm</label>
                 <input type="text" class="form-control" id="product_query" name="product_query" value="{{ product_query }}" placeholder="Nhập tên sản phẩm">
             </div> -->
-            <div class="col-md-2 d-flex align-items-end">
+            <div class="col-md-4 d-flex align-items-end">
                 <button type="submit" class="btn btn-primary me-2">Tìm kiếm</button>
                 <a href="{% url 'custom_admin:dashboard' %}" class="btn btn-secondary">Xóa bộ lọc</a>
             </div>
@@ -37,9 +39,9 @@
                 </div>
                 <div class="card-body">
                     <ul class="list-unstyled">
-                        <li><strong>Hôm nay:</strong> {{ revenue_today|intcomma }} VND</li>
-                        <li><strong>Tháng này:</strong> {{ revenue_month|intcomma }} VND</li>
-                        <li><strong>Năm nay:</strong> {{ revenue_year|intcomma }} VND</li>
+                        <li><strong>Ngày:</strong> {{ revenue_today|intcomma }} VND</li>
+                        <li><strong>Tháng:</strong> {{ revenue_month|intcomma }} VND</li>
+                        <li><strong>Năm:</strong> {{ revenue_year|intcomma }} VND</li>
                     </ul>
                     <canvas id="revenueChart" height="100"></canvas>
                 </div>
@@ -54,9 +56,9 @@
                 </div>
                 <div class="card-body">
                     <ul class="list-unstyled">
-                        <li><strong>Hôm nay:</strong> {{ orders_today }}</li>
-                        <li><strong>Tháng này:</strong> {{ orders_month }}</li>
-                        <li><strong>Năm nay:</strong> {{ orders_year }}</li>
+                        <li><strong>Ngày:</strong> {{ orders_today }}</li>
+                        <li><strong>Tháng:</strong> {{ orders_month }}</li>
+                        <li><strong>Năm:</strong> {{ orders_year }}</li>
                     </ul>
                     <canvas id="ordersChart" height="100"></canvas>
                 </div>
@@ -105,7 +107,7 @@
     new Chart(document.getElementById('revenueChart'), {
         type: 'bar',
         data: {
-            labels: ['Hôm nay', 'Tháng này', 'Năm nay'],
+            labels: ['Ngày', 'Tháng', 'Năm'],
             datasets: [{
                 label: 'Doanh thu (VND)',
                 data: [{{ revenue_today }}, {{ revenue_month }}, {{ revenue_year }}],
@@ -149,7 +151,7 @@
     new Chart(document.getElementById('ordersChart'), {
         type: 'bar',
         data: {
-            labels: ['Hôm nay', 'Tháng này', 'Năm nay'],
+            labels: ['Ngày', 'Tháng này', 'Năm nay'],
             datasets: [{
                 label: 'Số đơn hàng',
                 data: [{{ orders_today }}, {{ orders_month }}, {{ orders_year }}],

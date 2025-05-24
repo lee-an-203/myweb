@@ -1,0 +1,51 @@
+
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: 'Times New Roman'; font-size: 14px; }
+        .title { font-size: 18px; font-weight: bold; margin-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #444; padding: 8px; text-align: left; }
+    </style>
+</head>
+<body>
+    <div class="title">HÓA ĐƠN MUA HÀNG - MOBILE STORE</div>
+    <p><strong>Mã đơn hàng:</strong> {{ order.id }}</p>
+    <p><strong>Khách hàng:</strong> {{ order.user.username }}</p>
+    <p><strong>Email:</strong> {{ order.user.email }}</p>
+    <p><strong>Số điện thoại:</strong> {{ order.phone }}</p>
+    <p><strong>Địa chỉ giao hàng:</strong> {{ order.address }}</p>
+    <p><strong>Ngày đặt:</strong> {{ order.create_date|date:"d/m/Y" }}</p>
+
+
+    <table>
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Tên sản phẩm</th>
+                <th>Số lượng</th>
+                <th>Đơn giá</th>
+                <th>Thành tiền</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in order.orderdetail_set.all %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.product.price|intcomma }}</td>
+                <td>{{ item.amount|intcomma }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <p style="text-align: right; margin-top: 20px;">
+        <strong>Tổng cộng: {{ order.total_amount|intcomma }} VND</strong>
+    </p>
+</body>
+</html>

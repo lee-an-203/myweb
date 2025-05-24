@@ -58,6 +58,16 @@ class ProductForm(forms.ModelForm):
         widgets = {
             "tags": forms.CheckboxSelectMultiple(),
         }
+    def clean_name(self):
+        name = self.cleaned_data['name'].strip()
+        qs = Product.objects.filter(name__iexact=name)
+
+        if self.instance.pk:
+            qs = qs.exclude(pk=self.instance.pk)
+
+        if qs.exists():
+            raise forms.ValidationError("Sản phẩm đã tồn tại.")
+        return name
 
 
 class DetailForm(forms.ModelForm):
@@ -111,12 +121,10 @@ class RatingForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(RatingForm, self).__init__(*args, **kwargs)
 
-        # Prepopulate the user field with the logged-in user, making it readonly
         if "user" not in self.initial:
             self.initial["user"] = (
                 User.objects.first()
             )  # Assuming you're pre-assigning the user
         self.fields["user"].widget.attrs["readonly"] = True
 
-        # Optional: You can add a custom queryset for 'product' field, if needed
         self.fields["product"].queryset = Product.objects.all()
